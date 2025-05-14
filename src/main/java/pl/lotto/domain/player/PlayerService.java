@@ -28,7 +28,7 @@ class PlayerService {
         savePlayerProfile(playerSaved);
     }
 
-    void updatePlayer(UUID playerId, boolean isActive) {
+    void updatePlayerStatus(UUID playerId, boolean isActive) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
 
@@ -84,5 +84,22 @@ class PlayerService {
 
         PlayerProfile playerProfileSaved = playerProfileRepository.save(playerProfile);
         log.info("Player profile saved: {}", playerProfileSaved);
+    }
+
+    public PlayerLoginDto loginPlayer(PlayerLoginRequest request) {
+        Player player = playerRepository.findByEmail(request.email())
+                .stream()
+                .findAny()
+                .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+        if (!passwordEncoder.matches(request.password(), player.getPassword())) {
+            throw new InvalidCredentialsException("Invalid credentials");
+        }
+
+        String token = generateToken(player);
+        return new PlayerLoginDto(player.getId(), token);
+    }
+
+    private String generateToken(Player player) {
+        return "";
     }
 }

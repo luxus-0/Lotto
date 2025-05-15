@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Document(collection = "player_profiles")
 @Builder
+@Getter
 public class PlayerProfile {
     @Id
     private UUID id;

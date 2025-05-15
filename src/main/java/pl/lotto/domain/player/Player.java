@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Document(collection = "players")
 @Builder
 @Getter
+@Setter
 public class Player {
     @Id
     private UUID id;

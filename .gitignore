@@ -3,8 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-D:\Java\Lotto\secret_db.env
-D:\Java\Lotto\secret_jwt.env
+secret_db.env
+secret_jwt
 
 ### STS ###
 .apt_generated

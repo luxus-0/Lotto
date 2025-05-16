@@ -29,12 +29,4 @@ public class Player {
     private String email;
     private String password;
     private boolean active;
-
-    public Player(String username, String phone, String email, boolean active) {
-        this.id = UUID.randomUUID();
-        this.username = username;
-        this.phone = phone;
-        this.email = email;
-        this.active = active;
-    }
 }

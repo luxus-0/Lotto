@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import pl.lotto.domain.player.dto.PlayerLoginDto;
 import pl.lotto.domain.player.dto.PlayerLoginRequest;
 import pl.lotto.domain.player.dto.PlayerRegistrationRequest;
+import pl.lotto.infrastructure.security.JwtService;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,11 +17,13 @@ class PlayerService {
     private final PlayerRepository playerRepository;
     private final PlayerProfileRepository playerProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    PlayerService(PlayerRepository playerRepository, PlayerProfileRepository playerProfileRepository, PasswordEncoder passwordEncoder) {
+    PlayerService(PlayerRepository playerRepository, PlayerProfileRepository playerProfileRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.playerRepository = playerRepository;
         this.playerProfileRepository = playerProfileRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     void registerPlayer(PlayerRegistrationRequest request) {
@@ -94,6 +97,7 @@ class PlayerService {
                 .stream()
                 .findAny()
                 .orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+
         if (!passwordEncoder.matches(request.password(), player.getPassword())) {
             throw new InvalidCredentialsException("Invalid credentials");
         }
@@ -103,6 +107,6 @@ class PlayerService {
     }
 
     private String generateToken(Player player) {
-        return "";
+        return jwtService.generateToken(player.getUsername());
     }
 }

@@ -1,6 +1,6 @@
-package pl.lotto.domain.player;
+package pl.lotto.infrastructure.secret;
 
-public class PasswordRegex {
+public class SecretConstantsRegex {
     public static final String PASSWORD_PATTERN =
             "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&*!])[A-Za-z\\d@#$%^&*!]{8,}$";
 

@@ -2,8 +2,8 @@ package pl.lotto.domain.player.dto;
 
 import jakarta.validation.constraints.Pattern;
 
-import static pl.lotto.domain.player.PasswordRegex.PASSWORD_MESSAGE;
-import static pl.lotto.domain.player.PasswordRegex.PASSWORD_PATTERN;
+import static pl.lotto.infrastructure.secret.SecretConstantsRegex.PASSWORD_MESSAGE;
+import static pl.lotto.infrastructure.secret.SecretConstantsRegex.PASSWORD_PATTERN;
 
 public record PasswordRequestDto(
 

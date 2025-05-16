@@ -3,6 +3,9 @@ package pl.lotto.domain.player;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.lotto.domain.player.dto.PlayerLoginDto;
+import pl.lotto.domain.player.dto.PlayerLoginRequest;
+import pl.lotto.domain.player.dto.PlayerRegistrationRequest;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -11,7 +11,7 @@ import java.util.UUID;
 public record Ticket(
         @Id UUID id,
         UUID playerId,
-        Set<Integer> numbers,
+        Set<Integer> winNumbers,
         LocalDateTime actualDate
 ) {
 }

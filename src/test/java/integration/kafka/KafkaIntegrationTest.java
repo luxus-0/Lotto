@@ -36,7 +36,7 @@ import static org.awaitility.Awaitility.await;
 public class KafkaIntegrationTest {
 
     static KafkaContainer kafka = new KafkaContainer(
-            DockerImageName.parse("confluentinc/cp-kafka:7.0.1")
+            DockerImageName.parse("confluentinc/cp-kafka:6.2.1")
                     .asCompatibleSubstituteFor("apache/kafka")
     );
 

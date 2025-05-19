@@ -14,7 +14,7 @@ import java.util.random.RandomGenerator;
 @Component
 @AllArgsConstructor
 @Log4j2
-public class LotteryDrawScheduler {
+class LotteryDrawScheduler {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final LotteryDrawConfigurationProperties properties;

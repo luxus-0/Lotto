@@ -35,10 +35,10 @@ import static org.awaitility.Awaitility.await;
 @SpringBootTest(classes = LottoApplication.class)
 public class KafkaIntegrationTest {
 
-    static KafkaContainer kafka = new KafkaContainer(
-            DockerImageName.parse("confluentinc/cp-kafka:6.2.1")
-                    .asCompatibleSubstituteFor("apache/kafka")
-    );
+    private static final DockerImageName BITNAMI_KAFKA_IMAGE =
+            DockerImageName.parse("bitnami/kafka:3.4.0").asCompatibleSubstituteFor("apache/kafka");
+
+    private static final KafkaContainer kafka = new KafkaContainer(BITNAMI_KAFKA_IMAGE);
 
     static {
         kafka.start();

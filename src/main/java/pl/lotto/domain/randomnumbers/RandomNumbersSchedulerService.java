@@ -59,30 +59,36 @@ class RandomNumbersSchedulerService {
         }
     }
 
-    private void sendDrawNumbers(Set<Integer> drawnNumbers) throws InterruptedException {
+    void sendDrawNumbers(Set<Integer> drawnNumbers) throws InterruptedException {
         for (Integer number : drawnNumbers) {
-            messagingTemplate.convertAndSend("/lottery/draw", number);
+            messagingTemplate.convertAndSend("/random_numbers/draw", number);
             log.info("Drawn number: {}", number);
             Thread.sleep(properties.delayBetweenDrawNumbersMillis());
         }
     }
 
-    private void countDown() throws InterruptedException {
+    void countDown() throws InterruptedException {
         for (int i = properties.countDownSeconds(); i >= 0; i--) {
-            messagingTemplate.convertAndSend("/topic/lottery/countdown", i);
+            messagingTemplate.convertAndSend("/random_numbers/countdown", i);
             log.info("Countdown second time: {}", i);
             Thread.sleep(properties.delayBetweenDrawNumbersMillis());
         }
     }
 
-    private Set<Integer> drawNumbers() {
+    Set<Integer> drawNumbers() {
+        int rangeSize = properties.maxNumber() - properties.minNumber() + 1;
+        if (properties.countNumbers() > rangeSize) {
+            throw new IllegalArgumentException("Requested countNumbers is greater than number range");
+        }
+
         RandomGenerator random = RandomGenerator.getDefault();
         Set<Integer> numbers = new LinkedHashSet<>();
 
         while (numbers.size() < properties.countNumbers()) {
-            int randomNumbers = random.nextInt(properties.maxNumber() - properties.minNumber() + 1) + properties.minNumber();
-            numbers.add(randomNumbers);
+            int randomNumber = random.nextInt(rangeSize) + properties.minNumber();
+            numbers.add(randomNumber);
         }
+
         return numbers;
     }
 

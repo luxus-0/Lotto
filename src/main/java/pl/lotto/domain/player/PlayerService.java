@@ -1,8 +1,10 @@
 package pl.lotto.domain.player;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lotto.domain.player.dto.PlayerLoginDto;
 import pl.lotto.domain.player.dto.PlayerLoginRequest;
 import pl.lotto.domain.player.dto.PlayerRegistrationRequest;
@@ -13,19 +15,14 @@ import java.util.UUID;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 class PlayerService {
     private final PlayerRepository playerRepository;
     private final PlayerProfileRepository playerProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    PlayerService(PlayerRepository playerRepository, PlayerProfileRepository playerProfileRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.playerRepository = playerRepository;
-        this.playerProfileRepository = playerProfileRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-    }
-
+    @Transactional
     void registerPlayer(PlayerRegistrationRequest request) {
         checkPlayerExists(request);
 
@@ -44,7 +41,7 @@ class PlayerService {
                 .email(player.getEmail())
                 .phone(player.getPhone())
                 .username(player.getUsername())
-                .password(passwordEncoder.encode(player.getPassword()))
+                .password(player.getPassword())
                 .build();
 
         playerRepository.save(playerUpdate);

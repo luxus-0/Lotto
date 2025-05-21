@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/random_numbers")
 public class RandomNumbersController {
 
-    private final RandomNumbersSchedulerService randomNumbersSchedulerService;
+    private final RandomNumbersFacade randomNumbersFacade;
 
     @GetMapping
-    ResponseEntity<Void> generateLotteryDraw() throws InterruptedException {
-        randomNumbersSchedulerService.generateLottery();
+    ResponseEntity<Void> generateRandomNumbers() throws InterruptedException {
+        randomNumbersFacade.generate();
         return ResponseEntity.ok().build();
     }
 }

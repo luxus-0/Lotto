@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 public class JwtConfigurationProperties {
     private String secret;
-    private long expirationMs;
+    private Long expirationMs;
     private String issuer;
     private String subject;
 }

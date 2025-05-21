@@ -1,6 +1,7 @@
 package pl.lotto.infrastructure.security;
 
 import io.jsonwebtoken.Jwts;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.security.Keys;
 
@@ -10,13 +11,10 @@ import java.util.Date;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class JwtService {
 
     private final JwtConfigurationProperties properties;
-
-    public JwtService(JwtConfigurationProperties properties) {
-        this.properties = properties;
-    }
 
     public String generateToken(String username) {
         Date now = new Date();

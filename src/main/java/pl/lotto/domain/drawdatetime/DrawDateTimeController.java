@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/draws")
+@RequestMapping("/draw_dates/")
 public class DrawDateTimeController {
 
-    private final DrawDateTimeFacade drawDateTimeFacade;
+    private final DrawDateTimeService drawDateTimeService;
 
-    @GetMapping("/date_time")
+    @GetMapping("/")
     ResponseEntity<LocalDateTime> generate() {
-        LocalDateTime drawDate = drawDateTimeFacade.generateDrawDateTime();
+        LocalDateTime drawDate = drawDateTimeService.generateDrawDateTime();
         return ResponseEntity.ok(drawDate);
     }
 }

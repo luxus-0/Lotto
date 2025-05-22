@@ -1,11 +1,14 @@
 package pl.lotto.domain.drawdatetime;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 @Service
+@Log4j2
 public class DrawDateTimeService {
 
     private final Clock clock;
@@ -18,6 +21,8 @@ public class DrawDateTimeService {
 
     public LocalDateTime generateDrawDateTime() {
         LocalDateTime now = LocalDateTime.now(clock);
-        return calculator.calculateNextDrawDate(now);
+        LocalDateTime drawDate = calculator.calculateNextDrawDate(now);
+        log.info("Draw date: {}", drawDate);
+        return drawDate;
     }
 }

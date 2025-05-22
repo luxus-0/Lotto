@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 
 @Service
-class DrawDateTimeCalculator {
+public class DrawDateTimeCalculator {
 
     private final DrawDateTimeConfigurationProperties properties;
 
@@ -31,9 +31,11 @@ class DrawDateTimeCalculator {
     }
 
     private static LocalDateTime getNextDrawDate(LocalDateTime now, int today, int drawDay, LocalDateTime drawDateTime) {
+        DayOfWeek drawDayOfWeek = DayOfWeek.of(drawDay);
+
         if (today > drawDay || (today == drawDay && now.toLocalTime().isAfter(drawDateTime.toLocalTime()))) {
-            return drawDateTime.with(TemporalAdjusters.next(DayOfWeek.of(drawDay)));
+            return drawDateTime.with(TemporalAdjusters.next(drawDayOfWeek));
         }
-        return drawDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(drawDay)));
+        return drawDateTime.with(TemporalAdjusters.nextOrSame(drawDayOfWeek));
     }
 }

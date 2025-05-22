@@ -7,11 +7,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,7 +25,6 @@ class DrawDateTimeServiceTest {
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
         DrawDateTimeService service = new DrawDateTimeService(properties, clock);
-
         // when
         LocalDateTime result = service.generateDrawDateTime();
 
@@ -55,7 +52,7 @@ class DrawDateTimeServiceTest {
     @Test
     void shouldReturnNextDrawDayWhenTodayIsBeforeDrawDay() {
         // given
-        LocalDateTime now = LocalDateTime.of(2025, 5, 14, 14, 0); // środa
+        LocalDateTime now = LocalDateTime.of(2025, 5, 14, 14, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0); // sobota
         DrawDateTimeService service = new DrawDateTimeService(properties, clock);
@@ -71,9 +68,9 @@ class DrawDateTimeServiceTest {
     @Test
     void shouldReturnNextWeekDrawDayWhenTodayIsAfterDrawDay() {
         // given
-        LocalDateTime now = LocalDateTime.of(2025, 5, 18, 10, 0); // niedziela
+        LocalDateTime now = LocalDateTime.of(2025, 5, 18, 10, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
-        DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0); // sobota
+        DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
         DrawDateTimeService service = new DrawDateTimeService(properties, clock);
 
         // when
@@ -130,11 +127,15 @@ class DrawDateTimeServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidDrawDay() {
-        DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(8, 12, 0, 0, 0);
-        Clock clock = Clock.systemDefaultZone();
+    void shouldGenerateDrawDateWhenNowIsAfterDrawDate() {
+        // given
+        LocalDateTime now = LocalDateTime.of(2025, 5, 17, 10, 0);
+        Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
+        DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(7, 12, 0, 0, 0);
+        DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
-        assertThrows(DateTimeException.class, () -> new DrawDateTimeService(props, clock).generateDrawDateTime());
+        // when + then
+        assertEquals(service.generateDrawDateTime(), now);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class PlayerProfileService {
                 .totalWins(playerProfile.totalWins())
                 .description(playerProfile.description())
                 .imageUrl(playerProfile.imageUrl())
-                .createdAt(LocalDateTime.now())
+                .createdAt(profile.getCreatedAt())
                 .build();
 
         PlayerProfile saved = profileRepository.save(updated);

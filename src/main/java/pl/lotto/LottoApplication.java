@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import pl.lotto.domain.drawdatetime.DrawDateTimeConfigurationProperties;
 import pl.lotto.domain.randomnumbers.RandomNumbersConfigurationProperties;
-import pl.lotto.infrastructure.security.JwtConfigurationProperties;
+import pl.lotto.infrastructure.token.TokenConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({JwtConfigurationProperties.class, RandomNumbersConfigurationProperties.class, DrawDateTimeConfigurationProperties.class})
+@EnableConfigurationProperties({TokenConfigurationProperties.class, RandomNumbersConfigurationProperties.class, DrawDateTimeConfigurationProperties.class})
 public class LottoApplication {
 
     public static void main(String[] args) {

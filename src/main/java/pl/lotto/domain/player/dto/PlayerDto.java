@@ -8,11 +8,10 @@ import java.util.UUID;
 @Builder
 public record PlayerDto(
         UUID id,
-        String username,
-        String email,
+        String name,
+        String surname,
         String phone,
-        boolean active,
-        LocalDateTime createdAt,
-        PlayerProfileDto profile
+        String address,
+        LocalDateTime createdAt
 ) {
 }

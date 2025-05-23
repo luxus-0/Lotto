@@ -6,16 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/random_numbers")
 public class RandomNumbersController {
 
-    private final RandomNumbersFacade randomNumbersFacade;
+    private final RandomNumbersGeneratorService randomNumbersGeneratorService;
 
     @GetMapping
-    ResponseEntity<Void> generateRandomNumbers() throws InterruptedException {
-        randomNumbersFacade.generate();
-        return ResponseEntity.ok().build();
+    ResponseEntity<Set<Integer>> generateRandomNumbers() {
+        Set<Integer> numbers = randomNumbersGeneratorService.generateRandomNumbers();
+        return ResponseEntity.ok(numbers);
     }
 }

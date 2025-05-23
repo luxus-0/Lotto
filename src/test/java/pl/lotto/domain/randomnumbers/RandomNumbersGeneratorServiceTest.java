@@ -12,13 +12,13 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class RandomNumbersSchedulerServiceTest {
+class RandomNumbersGeneratorServiceTest {
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
 
     @Mock
-    private RandomNumbersConfigurationProperties properties;
+    private RandomNumbersSchedulerConfigurationProperties properties;
 
     @Mock
     private RandomNumbersRepository repository;
@@ -27,7 +27,7 @@ class RandomNumbersSchedulerServiceTest {
     private DrawDateTimeService drawDateTimeService;
 
     @InjectMocks
-    private RandomNumbersSchedulerService schedulerService;
+    private RandomNumbersGeneratorService schedulerService;
 
     @BeforeEach
     void setup() {
@@ -153,7 +153,7 @@ class RandomNumbersSchedulerServiceTest {
         when(drawDateTimeService.generateDrawDateTime()).thenReturn(date);
         when(repository.save(any(RandomNumbers.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        RandomNumbersSchedulerService spyService = spy(schedulerService);
+        RandomNumbersGeneratorService spyService = spy(schedulerService);
         doNothing().when(spyService).countDown();
         doNothing().when(spyService).sendDrawNumbers(anySet());
 

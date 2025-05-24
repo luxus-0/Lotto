@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 @Log4j2
-class TicketService {
+public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final TicketValidator ticketValidator;
@@ -59,6 +59,12 @@ class TicketService {
         return ticketRepository.findAllByPlayerId(playerId).stream()
                 .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
                 .collect(Collectors.toSet());
+    }
+
+    public TicketResponse getTicketByPlayer(UUID playerId) {
+        return ticketRepository.findAllByPlayerId(playerId).stream()
+                .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
+                .findAny().orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
     }
 
     public Set<Ticket> findTicketsForDraw(LocalDateTime drawTime) {

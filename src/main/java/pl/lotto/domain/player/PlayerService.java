@@ -53,7 +53,6 @@ class PlayerService {
         log.info("Player save: {}", playerSaved);
         return objectMapper.convertValue(playerSaved, PlayerResponse.class);
     }
-
     void removePlayer(UUID playerId) {
         playerRepository.findById(playerId).ifPresent(player -> playerRepository.removePlayerById(player.id()));
     }

@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -98,13 +99,16 @@ class DrawDateTimeServiceTest {
 
     @Test
     void shouldReturnNextWeekWhenNowIsOneSecondAfterDrawTime() {
+        // given
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 12, 0, 1);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
+        // when
         LocalDateTime result = service.generateDrawDateTime();
 
+        // then
         assertEquals(LocalDateTime.of(2025, 5, 24, 12, 0), result);
     }
 
@@ -115,51 +119,114 @@ class DrawDateTimeServiceTest {
             "2025-05-11T10:00,2025-05-17T12:00"  // niedziela
     })
     void shouldCalculateCorrectDrawDate(String nowStr, String expectedStr) {
+        // given
         LocalDateTime now = LocalDateTime.parse(nowStr);
         LocalDateTime expected = LocalDateTime.parse(expectedStr);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
+        // when
         LocalDateTime result = service.generateDrawDateTime();
 
+        // then
         assertEquals(expected, result);
     }
 
     @Test
-    void shouldGenerateDrawDateWhenNowIsAfterDrawDate() {
+    void shouldGenerateDrawDateWhenCurrentTimeIsBeforeDrawTimeInSameWeek() {
         // given
-        LocalDateTime now = LocalDateTime.of(2025, 5, 17, 10, 0);
-        Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
-        DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(7, 12, 0, 0, 0);
+        LocalDateTime fixedTestDateTime = LocalDateTime.of(2025, 5, 17, 10, 0); // Saturday 10:00
+        Clock clock = Clock.fixed(fixedTestDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+        DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(
+                DayOfWeek.SATURDAY.getValue(), // day
+                12, // hour
+                0, // minute
+                0, // second
+                0  // nanosecond
+        );
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
-        // when + then
-        assertEquals(service.generateDrawDateTime(), now);
+        // when
+        LocalDateTime actualDrawDateTime = service.generateDrawDateTime();
+
+        // then
+        LocalDateTime expectedDrawDateTime = LocalDateTime.of(2025, 5, 17, 12, 0);
+        assertEquals(expectedDrawDateTime, actualDrawDateTime);
+    }
+
+    @Test
+    void shouldGenerateNextWeekDrawDateWhenCurrentTimeIsAfterDrawTimeInSameWeek() {
+        // given
+        LocalDateTime fixedTestDateTime = LocalDateTime.of(2025, 5, 17, 13, 0); // Saturday 13:00
+        Clock clock = Clock.fixed(fixedTestDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+        DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(
+                DayOfWeek.SATURDAY.getValue(), // day
+                12, // hour
+                0, // minute
+                0, // second
+                0  // nanosecond
+        );
+        DrawDateTimeService service = new DrawDateTimeService(props, clock);
+
+        // when
+        LocalDateTime actualDrawDateTime = service.generateDrawDateTime();
+
+        // then
+        LocalDateTime expectedDrawDateTime = LocalDateTime.of(2025, 5, 24, 12, 0); // Next Saturday 12:00
+        assertEquals(expectedDrawDateTime, actualDrawDateTime);
+    }
+
+    @Test
+    void shouldGenerateDrawDateWhenCurrentTimeIsOnDifferentDayBeforeDrawDay() {
+        // given
+        LocalDateTime fixedTestDateTime = LocalDateTime.of(2025, 5, 12, 10, 0); // Monday 10:00
+        Clock clock = Clock.fixed(fixedTestDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+        DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(
+                DayOfWeek.SATURDAY.getValue(),
+                12,
+                0,
+                0,
+                0
+        );
+        DrawDateTimeService service = new DrawDateTimeService(props, clock);
+
+        // when
+        LocalDateTime actualDrawDateTime = service.generateDrawDateTime();
+
+        // then
+        LocalDateTime expectedDrawDateTime = LocalDateTime.of(2025, 5, 17, 12, 0);
+        assertEquals(expectedDrawDateTime, actualDrawDateTime);
     }
 
     @Test
     void shouldCalculateDrawDateTimeInDifferentTimeZone() {
+        // given
         ZoneId zone = ZoneId.of("Europe/London");
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 10, 0);
         Clock clock = Clock.fixed(now.atZone(zone).toInstant(), zone);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
+        // when
         LocalDateTime result = service.generateDrawDateTime();
 
+        // then
         assertEquals(LocalDateTime.of(2025, 5, 17, 12, 0), result);
     }
 
     @Test
     void shouldAlwaysReturnFutureDrawDateTime() {
+        // given
         LocalDateTime now = LocalDateTime.now();
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
+        // when
         LocalDateTime result = service.generateDrawDateTime();
 
+        // then
         assertTrue(result.isEqual(now) || result.isAfter(now));
     }
 }

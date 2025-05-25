@@ -3,7 +3,6 @@ package pl.lotto.domain.ticket.dto;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.lotto.domain.ticket.TicketStatus;

@@ -2,7 +2,6 @@ package pl.lotto.domain.randomnumbers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +18,9 @@ class RandomNumbersGeneratorService {
     private final RandomNumbersRepository randomNumbersRepository;
     private final RandomNumbersValidator validator;
 
-    @Scheduled(cron = "${random.number.cron}")
-    Set<Integer> generateRandomNumbers() {
-        Set<Integer> randomNumbers = findRandomNumbers();
+    @Scheduled(cron = "${random.numbers.cron}")
+    Set<Integer> generate() {
+        Set<Integer> randomNumbers = find();
         if(validator.validate(randomNumbers)) {
             Set<Integer> savedRandomNumbers = randomNumbersRepository.save(randomNumbers);
             log.info("Random numbers saved: {}", savedRandomNumbers);
@@ -29,7 +28,7 @@ class RandomNumbersGeneratorService {
         return randomNumbers;
     }
 
-    Set<Integer> findRandomNumbers() {
+    Set<Integer> find() {
         RandomGenerator random = RandomGenerator.getDefault();
         Set<Integer> numbers = new LinkedHashSet<>();
 

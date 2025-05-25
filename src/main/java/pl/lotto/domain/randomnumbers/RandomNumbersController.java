@@ -17,7 +17,7 @@ public class RandomNumbersController {
 
     @GetMapping
     ResponseEntity<Set<Integer>> generateRandomNumbers() {
-        Set<Integer> numbers = randomNumbersGeneratorService.generateRandomNumbers();
+        Set<Integer> numbers = randomNumbersGeneratorService.generate();
         return ResponseEntity.ok(numbers);
     }
 }

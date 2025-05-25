@@ -1,12 +1,14 @@
 package pl.lotto.domain.ticket.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+@Builder
 public record TicketRequest(@NotBlank(message = "{not.blank.playerId}") UUID playerId,
                             @NotBlank(message = "{not.blank.numbers}") Set<Integer> numbers,
 

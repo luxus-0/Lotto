@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class TicketService {
+class TicketService {
 
     private final TicketRepository ticketRepository;
     private final ObjectMapper objectMapper;
@@ -61,12 +61,6 @@ public class TicketService {
                 .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
                 .collect(Collectors.toSet());
     }
-
-    public TicketResponse getTicketByPlayer(UUID playerId) {
-        return ticketRepository.findAllByPlayerId(playerId).stream()
-                .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
-                .findAny().orElseThrow(() -> new TicketNotFoundException(TICKET_NOT_FOUND));
-}
 
     public Set<Ticket> findTicketsForDraw(LocalDateTime drawTime) {
         return ticketRepository.findAllByDrawDateTimeBeforeAndStatus(drawTime, TicketStatus.NEW);

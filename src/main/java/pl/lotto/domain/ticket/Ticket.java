@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,6 +19,7 @@ public record Ticket(
         UUID playerId,
         @ElementCollection
         Set<Integer> numbers,
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime drawDateTime,
         @Enumerated(EnumType.STRING)
         TicketStatus status

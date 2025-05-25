@@ -13,11 +13,11 @@ import java.util.Set;
 @RequestMapping("/random_numbers")
 public class RandomNumbersController {
 
-    private final RandomNumbersGeneratorService randomNumbersGeneratorService;
+    private final RandomNumbersGeneratorFacade facade;
 
     @GetMapping
     ResponseEntity<Set<Integer>> generateRandomNumbers() {
-        Set<Integer> numbers = randomNumbersGeneratorService.generate();
+        Set<Integer> numbers = facade.generate();
         return ResponseEntity.ok(numbers);
     }
 }

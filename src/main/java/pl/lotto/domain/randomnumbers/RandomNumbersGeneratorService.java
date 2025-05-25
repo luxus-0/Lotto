@@ -28,7 +28,7 @@ class RandomNumbersGeneratorService {
         return randomNumbers;
     }
 
-    Set<Integer> find() {
+    private Set<Integer> find() {
         RandomGenerator random = RandomGenerator.getDefault();
         Set<Integer> numbers = new LinkedHashSet<>();
 

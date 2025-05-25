@@ -20,7 +20,8 @@ class TicketService {
     private final ObjectMapper objectMapper;
     private final TicketKafkaPublisher ticketKafkaPublisher;
     private final TicketNumbersValidator validator;
-    static final String TICKET_NOT_FOUND = "Ticket not found";
+    private static final String TICKET_NOT_FOUND = "Ticket not found";
+    private static final String TICKET_OUT_OF_RANGE = "Ticket numbers out of range";
 
     TicketResponse createTicket(TicketRequest ticketRequest) {
         Set<Integer> numbers = ticketRequest.numbers();
@@ -37,7 +38,7 @@ class TicketService {
             ticketKafkaPublisher.publishTicket(ticketEvent);
             return objectMapper.convertValue(ticketSaved, TicketResponse.class);
         }
-        throw new TicketNumbersOutOfBoundsException("Numbers out of bound");
+        throw new TicketNumbersOutOfBoundsException(TICKET_OUT_OF_RANGE);
     }
 
     private static Ticket getTicket(TicketRequest ticketRequest) {

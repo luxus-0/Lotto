@@ -25,7 +25,7 @@ class PlayerFacadeTest {
     @Test
     void should_delegate_register_request_to_service() {
         // given
-        PlayerRequest request = new PlayerRequest(UUID.randomUUID(),"John", "Doe", "john@example.com");
+        PlayerRequest request = new PlayerRequest("John", "Doe", "john@example.com");
         PlayerResponse expectedResponse = PlayerResponse.builder()
                 .id(UUID.randomUUID())
                 .name("John")
@@ -100,7 +100,6 @@ class PlayerFacadeTest {
         UUID playerId = UUID.randomUUID();
 
         PlayerRequest playerRequest = PlayerRequest.builder()
-                .id(playerId)
                 .name("UpdatedName")
                 .surname("UpdatedSurname")
                 .email("updated.email@example.com")
@@ -119,7 +118,7 @@ class PlayerFacadeTest {
                 .thenReturn(expectedResponse);
 
         // WHEN
-        PlayerResponse actualResponse = playerFacade.update(playerRequest);
+        PlayerResponse actualResponse = playerFacade.updatePlayer(playerId, playerRequest);
 
         // THEN
         verify(playerService, times(1)).updatePlayer(playerId, playerRequest);

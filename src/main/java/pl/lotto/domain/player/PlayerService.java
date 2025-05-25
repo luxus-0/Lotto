@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_FAIL;
 import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
+import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +32,8 @@ class PlayerService {
         Player playerSaved = playerRepository.save(player);
         log.info("Player saved: {}", playerSaved);
 
-        PlayerResponse response = toPlayer(playerRequest, playerSaved);
-        if (response == null) {
-            return getRegistrationPlayerFailure();
-        }
-        return response;
+
+        return toPlayer(playerRequest, playerSaved);
     }
 
     private void validatePlayerDoesNotExist(PlayerRequest playerRequest) {
@@ -49,14 +48,6 @@ class PlayerService {
         }
     }
 
-    private static PlayerResponse getRegistrationPlayerFailure() {
-        return PlayerResponse.builder()
-                .isCreated(false)
-                .result(REGISTER_FAIL.name())
-                .status(PlayerStatus.INACTIVE)
-                .build();
-    }
-
     private static PlayerResponse toPlayer(PlayerRequest playerRequest, Player playerSaved) {
         return PlayerResponse.builder()
                 .id(playerSaved.id())
@@ -64,7 +55,7 @@ class PlayerService {
                 .surname(playerRequest.surname())
                 .isCreated(true)
                 .result(REGISTER_SUCCESS.name())
-                .status(PlayerStatus.ACTIVE)
+                .status(playerSaved.status())
                 .build();
     }
 
@@ -75,17 +66,18 @@ class PlayerService {
                 .surname(playerRequest.surname())
                 .email(playerRequest.email())
                 .createdAt(LocalDateTime.now())
+                .status(ACTIVE)
                 .build();
     }
 
-    PlayerResponse findPlayer(UUID playerId) {
+    public PlayerResponse findPlayer(UUID playerId) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
 
         return objectMapper.convertValue(player, PlayerResponse.class);
     }
 
-    Set<PlayerResponse> findPlayers() {
+    public Set<PlayerResponse> findPlayers() {
         List<Player> players = playerRepository.findAll();
         if (players.isEmpty()) {
             throw new PlayerNotFoundException(PLAYER_NOT_FOUND);
@@ -94,7 +86,7 @@ class PlayerService {
                 .collect(Collectors.toSet());
     }
 
-    PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
+    public PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
         Player existingPlayer = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));
 
@@ -112,7 +104,7 @@ class PlayerService {
         return objectMapper.convertValue(savedPlayer, PlayerResponse.class);
     }
 
-    void removePlayer(UUID playerId) {
+    public void removePlayer(UUID playerId) {
         Player playerToDelete = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));
         playerRepository.delete(playerToDelete);

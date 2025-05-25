@@ -2,7 +2,6 @@ package pl.lotto.domain.ticket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.ticket.dto.TicketCreatedEvent;
 import pl.lotto.domain.ticket.dto.TicketRequest;
@@ -15,26 +14,18 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@Log4j2
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final TicketValidator ticketValidator;
     private final ObjectMapper objectMapper;
     private final TicketKafkaPublisher ticketKafkaPublisher;
+    private final TicketNumbersValidator validator;
+    static final String TICKET_NOT_FOUND = "Ticket not found";
 
     TicketResponse createTicket(TicketRequest ticketRequest) {
-        boolean validate = ticketValidator.validate(ticketRequest);
-
-        if (validate) {
-            Ticket ticket = Ticket.builder()
-                    .id(UUID.randomUUID())
-                    .playerId(ticketRequest.playerId())
-                    .numbers(ticketRequest.numbers())
-                    .status(TicketStatus.NEW)
-                    .drawDateTime(ticketRequest.drawDateTime())
-                    .build();
-
+        Set<Integer> numbers = ticketRequest.numbers();
+        if (validator.isNumbersInRange(numbers)) {
+            Ticket ticket = getTicket(ticketRequest);
             Ticket ticketSaved = ticketRepository.save(ticket);
 
             TicketCreatedEvent ticketEvent = new TicketCreatedEvent(
@@ -46,12 +37,22 @@ public class TicketService {
             ticketKafkaPublisher.publishTicket(ticketEvent);
             return objectMapper.convertValue(ticketSaved, TicketResponse.class);
         }
-        throw new TicketNotFoundException("Ticket not found");
+        throw new TicketNumbersOutOfBoundsException("Numbers out of bound");
+    }
+
+    private static Ticket getTicket(TicketRequest ticketRequest) {
+        return Ticket.builder()
+                .id(UUID.randomUUID())
+                .playerId(ticketRequest.playerId())
+                .numbers(ticketRequest.numbers())
+                .status(TicketStatus.NEW)
+                .drawDateTime(ticketRequest.drawDateTime())
+                .build();
     }
 
     public TicketResponse getTicketById(UUID id) {
         Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new TicketNotFoundException("Ticket id:" + id + "not found"));
+                .orElseThrow(() -> new TicketNotFoundException(TICKET_NOT_FOUND));
         return objectMapper.convertValue(ticket, TicketResponse.class);
     }
 
@@ -64,8 +65,8 @@ public class TicketService {
     public TicketResponse getTicketByPlayer(UUID playerId) {
         return ticketRepository.findAllByPlayerId(playerId).stream()
                 .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
-                .findAny().orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
-    }
+                .findAny().orElseThrow(() -> new TicketNotFoundException(TICKET_NOT_FOUND));
+}
 
     public Set<Ticket> findTicketsForDraw(LocalDateTime drawTime) {
         return ticketRepository.findAllByDrawDateTimeBeforeAndStatus(drawTime, TicketStatus.NEW);

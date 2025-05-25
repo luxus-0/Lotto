@@ -24,11 +24,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TicketServiceTest {
 
+    private static final String TICKET_NOT_FOUND ="Ticket not found" ;
     @Mock
     private TicketRepository ticketRepository;
-
-    @Mock
-    private TicketValidator ticketValidator;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -49,7 +47,7 @@ class TicketServiceTest {
                 TicketStatus.NEW,
                 LocalDateTime.now()
         );
-        ticketService = new TicketService(ticketRepository, ticketValidator, objectMapper, ticketKafkaPublisher);
+        ticketService = new TicketService(ticketRepository, objectMapper, ticketKafkaPublisher);
     }
 
     @Test
@@ -58,7 +56,6 @@ class TicketServiceTest {
         UUID playerId = UUID.randomUUID();
         TicketRequest request = new TicketRequest(playerId, Set.of(5, 10, 15), LocalDateTime.now());
 
-        when(ticketValidator.validate(request)).thenReturn(true);
 
         Ticket ticket = Ticket.builder()
                 .id(UUID.randomUUID())
@@ -124,7 +121,7 @@ class TicketServiceTest {
         // when / then
         assertThatThrownBy(() -> ticketService.getTicketById(ticketId))
                 .isInstanceOf(TicketNotFoundException.class)
-                .hasMessageContaining("Ticket id:" + ticketId + "not found");
+                .hasMessageContaining(TICKET_NOT_FOUND);
 
         verify(ticketRepository).findById(ticketId);
         verifyNoInteractions(objectMapper);

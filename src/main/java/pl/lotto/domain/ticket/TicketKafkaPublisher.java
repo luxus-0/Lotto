@@ -3,7 +3,6 @@ package pl.lotto.domain.ticket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.ticket.dto.TicketCreatedEvent;
 

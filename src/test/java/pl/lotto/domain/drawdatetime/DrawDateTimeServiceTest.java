@@ -140,10 +140,10 @@ class DrawDateTimeServiceTest {
         Clock clock = Clock.fixed(fixedTestDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(
                 DayOfWeek.SATURDAY.getValue(), // day
-                12, // hour
-                0, // minute
-                0, // second
-                0  // nanosecond
+                12,
+                0,
+                0,
+                0
         );
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 
@@ -161,11 +161,11 @@ class DrawDateTimeServiceTest {
         LocalDateTime fixedTestDateTime = LocalDateTime.of(2025, 5, 17, 13, 0); // Saturday 13:00
         Clock clock = Clock.fixed(fixedTestDateTime.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(
-                DayOfWeek.SATURDAY.getValue(), // day
-                12, // hour
-                0, // minute
-                0, // second
-                0  // nanosecond
+                DayOfWeek.SATURDAY.getValue(),
+                12,
+                0,
+                0,
+                0
         );
         DrawDateTimeService service = new DrawDateTimeService(props, clock);
 

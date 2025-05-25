@@ -9,6 +9,7 @@ import pl.lotto.domain.player.dto.PlayerResponse;
 import pl.lotto.domain.ticket.TicketService;
 import pl.lotto.domain.ticket.dto.TicketResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,37 +25,46 @@ class PlayerService {
     private final static String PLAYER_NOT_FOUND = "Player not found";
 
     PlayerResponse registerPlayer(PlayerRequest playerRequest) {
-        Player player = playerRepository.findById(playerRequest.id()).orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
-
+        TicketResponse ticket = ticketService.getTicketByPlayer(playerRequest.id());
+        Player player = getPlayer(playerRequest, ticket);
         Player playerSaved = playerRepository.save(player);
         log.info("Player saved: {}", playerSaved);
 
-        TicketResponse ticket = ticketService.getTicketByPlayer(playerSaved.id());
+        return PlayerResponse.builder()
+                .id(playerSaved.id())
+                .ticketId(ticket.id())
+                .isCreated(true)
+                .result(REGISTER_SUCCESS.name())
+                .build();
+    }
 
-        return PlayerResponse.builder().id(playerSaved.id()).ticketId(ticket.id()).isCreated(true).result(REGISTER_SUCCESS.name()).build();
+    private static Player getPlayer(PlayerRequest playerRequest, TicketResponse ticket) {
+        return Player.builder()
+                .id(playerRequest.id())
+                .ticketId(ticket.id())
+                .name(playerRequest.name())
+                .surname(playerRequest.surname())
+                .email(playerRequest.email())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     PlayerResponse findPlayerById(UUID playerId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
 
         return objectMapper.convertValue(player, PlayerResponse.class);
     }
 
     PlayerResponse findPlayers() {
         List<Player> players = playerRepository.findAll();
-        Player player = players.stream().findAny().orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
+        Player player = players.stream().findAny()
+                .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
         return objectMapper.convertValue(player, PlayerResponse.class);
     }
 
-    PlayerResponse createPlayer(PlayerRequest playerRequest) {
-        Player player = playerRepository.findById(playerRequest.id()).orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
-
-        Player playerSaved = playerRepository.save(player);
-        log.info("Player save: {}", playerSaved);
-        return objectMapper.convertValue(playerSaved, PlayerResponse.class);
-    }
-
     void removePlayer(UUID playerId) {
-        playerRepository.findById(playerId).ifPresent(player -> playerRepository.removePlayerById(player.id()));
+        playerRepository.findById(playerId)
+                .ifPresent(player -> playerRepository.removePlayerById(player.id()));
     }
 }

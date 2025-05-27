@@ -17,7 +17,7 @@ public class RandomNumbersController {
 
     @GetMapping
     ResponseEntity<Set<Integer>> generateRandomNumbers() {
-        Set<Integer> numbers = facade.generate();
-        return ResponseEntity.ok(numbers);
+        facade.generate();
+        return ResponseEntity.ok().build();
     }
 }

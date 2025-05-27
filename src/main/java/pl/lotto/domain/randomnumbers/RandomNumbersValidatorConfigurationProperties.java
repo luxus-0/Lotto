@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "random.numbers")
+@ConfigurationProperties(prefix = "random.winNumbers")
 public record RandomNumbersValidatorConfigurationProperties(
         @NotBlank @Min(1) Integer min,
         @NotBlank @Max(99) Integer max,

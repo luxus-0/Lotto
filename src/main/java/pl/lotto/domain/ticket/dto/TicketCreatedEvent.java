@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public record TicketCreatedEvent(@NotBlank(message = "{not.blank.ticketId}") UUID ticketId,
                                  @NotBlank(message = "{not.blank.playerId}") UUID playerId,
-                                 @NotBlank(message = "{not.blank.numbers]") Set<Integer> numbers) {
+                                 @NotBlank(message = "{not.blank.winNumbers]") Set<Integer> numbers) {
 }

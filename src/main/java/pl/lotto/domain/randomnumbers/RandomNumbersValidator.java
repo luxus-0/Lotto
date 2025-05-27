@@ -7,7 +7,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @Component
-class RandomNumbersValidator {
+public class RandomNumbersValidator {
     private final RandomNumbersValidatorConfigurationProperties properties;
 
     boolean validate(Set<Integer> numbers) {
@@ -18,7 +18,7 @@ class RandomNumbersValidator {
 
     private void validateInput(Set<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
-            throw new RandomNumbersNotFoundException("Provided numbers are null or empty.");
+            throw new RandomNumbersNotFoundException("Provided winNumbers are null or empty.");
         }
     }
 

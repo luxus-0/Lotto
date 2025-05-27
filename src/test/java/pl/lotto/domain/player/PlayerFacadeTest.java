@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
+import pl.lotto.domain.player.dto.PlayerStatistics;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,19 +15,27 @@ import static org.mockito.Mockito.*;
 
 class PlayerFacadeTest {
 
-    private PlayerService playerService;
+    private PlayerQueryService playerQueryService;
     private PlayerFacade playerFacade;
 
     @BeforeEach
     void setUp() {
-        playerService = mock(PlayerService.class);
-        playerFacade = new PlayerFacade(playerService);
+        playerQueryService = mock(PlayerQueryService.class);
+        playerFacade = new PlayerFacade(playerQueryService);
     }
 
     @Test
     void should_delegate_register_request_to_service() {
         // given
-        PlayerRequest request = new PlayerRequest("John", "Doe", "john@example.com");
+        PlayerStatistics playerStatistics = PlayerStatistics.builder()
+                .win(4)
+                .lose(1)
+                .lastWinAt(LocalDateTime.now())
+                .lastPlayedAt(LocalDateTime.now().minusDays(2))
+                .playerId(UUID.randomUUID())
+                .build();
+
+        PlayerRequest request = new PlayerRequest(UUID.randomUUID(),"John", "Doe", "john@example.com", playerStatistics);
         PlayerResponse expectedResponse = PlayerResponse.builder()
                 .id(UUID.randomUUID())
                 .name("John")
@@ -34,14 +44,14 @@ class PlayerFacadeTest {
                 .result("REGISTER_SUCCESS")
                 .build();
 
-        when(playerService.registerPlayer(request)).thenReturn(expectedResponse);
+        when(playerQueryService.registerPlayer(request)).thenReturn(expectedResponse);
 
         // when
         PlayerResponse actualResponse = playerFacade.register(request);
 
         // then
         assertThat(actualResponse).isEqualTo(expectedResponse);
-        verify(playerService, times(1)).registerPlayer(request);
+        verify(playerQueryService, times(1)).registerPlayer(request);
     }
 
     @Test
@@ -56,14 +66,14 @@ class PlayerFacadeTest {
                 .result("REGISTER_SUCCESS")
                 .build();
 
-        when(playerService.findPlayer(playerId)).thenReturn(expected);
+        when(playerQueryService.findPlayer(playerId)).thenReturn(expected);
 
         // when
         PlayerResponse actual = playerFacade.find(playerId);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        verify(playerService).findPlayer(playerId);
+        verify(playerQueryService).findPlayer(playerId);
     }
 
     @Test
@@ -72,14 +82,14 @@ class PlayerFacadeTest {
         Set<PlayerResponse> expected = Set.of(
                 new PlayerResponse(UUID.randomUUID(), "Adam", "Nowak", true, "REGISTER_SUCCESS", PlayerStatus.ACTIVE)
         );
-        when(playerService.findPlayers()).thenReturn(expected);
+        when(playerQueryService.findPlayers()).thenReturn(expected);
 
         // when
         Set<PlayerResponse> actual = playerFacade.findAll();
 
         // then
         assertThat(actual).isEqualTo(expected);
-        verify(playerService).findPlayers();
+        verify(playerQueryService).findPlayers();
     }
 
     @Test
@@ -91,7 +101,7 @@ class PlayerFacadeTest {
         playerFacade.delete(playerId);
 
         // then
-        verify(playerService).removePlayer(playerId);
+        verify(playerQueryService).removePlayer(playerId);
     }
 
     @Test
@@ -114,14 +124,14 @@ class PlayerFacadeTest {
                 .status(PlayerStatus.ACTIVE)
                 .build();
 
-        when(playerService.updatePlayer(any(UUID.class), any(PlayerRequest.class)))
+        when(playerQueryService.updatePlayer(any(UUID.class), any(PlayerRequest.class)))
                 .thenReturn(expectedResponse);
 
         // WHEN
         PlayerResponse actualResponse = playerFacade.updatePlayer(playerId, playerRequest);
 
         // THEN
-        verify(playerService, times(1)).updatePlayer(playerId, playerRequest);
+        verify(playerQueryService, times(1)).updatePlayer(playerId, playerRequest);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
 

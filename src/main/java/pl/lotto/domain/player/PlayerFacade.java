@@ -1,8 +1,6 @@
 package pl.lotto.domain.player;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
@@ -13,25 +11,25 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PlayerFacade {
-    private final PlayerService playerService;
+    private final PlayerQueryService playerQueryService;
 
     public PlayerResponse register(PlayerRequest player) {
-        return playerService.registerPlayer(player);
+        return playerQueryService.registerPlayer(player);
     }
 
     public PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
-        return playerService.updatePlayer(playerId, playerRequest);
+        return playerQueryService.updatePlayer(playerId, playerRequest);
     }
 
     public PlayerResponse find(UUID playerId) {
-        return playerService.findPlayer(playerId);
+        return playerQueryService.findPlayer(playerId);
     }
 
     public Set<PlayerResponse> findAll() {
-        return playerService.findPlayers();
+        return playerQueryService.findPlayers();
     }
 
     public void delete(UUID playerId) {
-        playerService.removePlayer(playerId);
+        playerQueryService.removePlayer(playerId);
     }
 }

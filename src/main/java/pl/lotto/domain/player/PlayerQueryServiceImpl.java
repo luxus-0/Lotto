@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_FAIL;
 import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
 import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
 
@@ -21,12 +20,13 @@ import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-class PlayerService {
+class PlayerQueryServiceImpl implements PlayerQueryService{
     private final PlayerRepository playerRepository;
     private final ObjectMapper objectMapper;
     private final static String PLAYER_NOT_FOUND = "Player not found";
 
-    PlayerResponse registerPlayer(PlayerRequest playerRequest) {
+    @Override
+    public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
         validatePlayerDoesNotExist(playerRequest);
         Player player = getPlayer(playerRequest);
         Player playerSaved = playerRepository.save(player);
@@ -40,6 +40,10 @@ class PlayerService {
         String name = playerRequest.name();
         String surname = playerRequest.surname();
         String email = playerRequest.email();
+        checkExistingPlayer(playerRequest, name, surname, email);
+    }
+
+    private void checkExistingPlayer(PlayerRequest playerRequest, String name, String surname, String email) {
         if (playerRepository.existsByNameAndSurname(name, surname)) {
             throw new PlayerAlreadyExistsException("Player {} {} already exists", name, surname);
         }
@@ -70,6 +74,7 @@ class PlayerService {
                 .build();
     }
 
+    @Override
     public PlayerResponse findPlayer(UUID playerId) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
@@ -77,6 +82,7 @@ class PlayerService {
         return objectMapper.convertValue(player, PlayerResponse.class);
     }
 
+    @Override
     public Set<PlayerResponse> findPlayers() {
         List<Player> players = playerRepository.findAll();
         if (players.isEmpty()) {
@@ -86,6 +92,7 @@ class PlayerService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
     public PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
         Player existingPlayer = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));
@@ -104,6 +111,7 @@ class PlayerService {
         return objectMapper.convertValue(savedPlayer, PlayerResponse.class);
     }
 
+    @Override
     public void removePlayer(UUID playerId) {
         Player playerToDelete = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));

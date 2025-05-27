@@ -8,16 +8,18 @@ import java.time.LocalDateTime;
 
 @Service
 @Log4j2
-public class DrawDateTimeService {
+public class DrawDateTimeQueryServiceImpl implements DrawDateTimeQueryService {
 
     private final Clock clock;
     private final DrawDateTimeCalculator calculator;
 
-    public DrawDateTimeService(DrawDateTimeConfigurationProperties properties, Clock clock) {
+    public DrawDateTimeQueryServiceImpl(DrawDateTimeConfigurationProperties properties, Clock clock) {
         this.clock = clock;
         this.calculator = new DrawDateTimeCalculator(properties);
     }
 
+
+    @Override
     public LocalDateTime generateDrawDateTime() {
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime drawDate = calculator.calculateNextDrawDate(now);

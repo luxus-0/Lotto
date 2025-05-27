@@ -12,29 +12,35 @@ import java.util.random.RandomGenerator;
 @Component
 @AllArgsConstructor
 @Log4j2
-class RandomNumbersGeneratorService {
+public class RandomNumbersGeneratorQueryServiceImpl implements RandomNumberGeneratorQueryService {
 
     private final RandomNumbersValidatorConfigurationProperties properties;
     private final RandomNumbersRepository randomNumbersRepository;
     private final RandomNumbersValidator validator;
 
     @Scheduled(cron = "${random.numbers.cron}")
-    Set<Integer> generate() {
-        Set<Integer> randomNumbers = find();
-        if(validator.validate(randomNumbers)) {
+    @Override
+    public void generate() {
+        Set<Integer> randomNumbers = generateUniqueNumbers();
+        if (validator.validate(randomNumbers)) {
             Set<Integer> savedRandomNumbers = randomNumbersRepository.save(randomNumbers);
             log.info("Random numbers saved: {}", savedRandomNumbers);
+            return;
         }
-        return randomNumbers;
+        throw new RandomNumbersNotFoundException("Random numbers not found");
     }
 
-    private Set<Integer> find() {
-        RandomGenerator random = RandomGenerator.getDefault();
-        Set<Integer> numbers = new LinkedHashSet<>();
-
+    Set<Integer> generateUniqueNumbers() {
         int min = properties.min();
         int max = properties.max();
         int count = properties.count();
+
+        if (count > (max - min + 1)) {
+            throw new RandomNumbersOutOfBoundsException("Random numbers out of bounds");
+        }
+
+        RandomGenerator random = RandomGenerator.getDefault();
+        Set<Integer> numbers = new LinkedHashSet<>();
 
         while (numbers.size() < count) {
             int randomNumber = random.nextInt(max - min + 1) + min;

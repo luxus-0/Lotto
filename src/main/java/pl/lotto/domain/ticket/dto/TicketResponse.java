@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Builder
 public record TicketResponse(@NotBlank(message = "{not.blank.playerId}") UUID playerId,
-                             @NotBlank(message = "{not.blank.numbers}") Set<Integer> numbers,
+                             @NotBlank(message = "{not.blank.winNumbers}") Set<Integer> numbers,
 
                              @NotBlank(message = "{not.blank.drawDateTime}")
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime drawDateTime,

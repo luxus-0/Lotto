@@ -1,34 +1,39 @@
 package pl.lotto.domain.ticket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import pl.lotto.domain.ticket.dto.TicketCreatedEvent;
 import pl.lotto.domain.ticket.dto.TicketRequest;
 import pl.lotto.domain.ticket.dto.TicketResponse;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-class TicketFacadeTest {
+class TicketQueryServiceImplTest {
 
     @Mock
-    private TicketService ticketService;
+    private TicketRepository ticketRepository;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    private TicketKafkaPublisher ticketKafkaPublisher;
+
+    @Mock
+    private TicketNumbersValidator validator;
 
     @InjectMocks
-    private TicketFacade ticketFacade;
-
+    private TicketQueryServiceImpl ticketQueryService;
 
     @BeforeEach
     void setUp() {
@@ -36,158 +41,113 @@ class TicketFacadeTest {
     }
 
     @Test
-    void testCreateTicket_shouldCallServiceAndReturnTicketResponse() {
-        // GIVEN
+    void shouldCreateTicketWhenNumbersAreValid() {
+        // given
         UUID playerId = UUID.randomUUID();
-        Set<Integer> numbers = new HashSet<>(Set.of(1, 2, 3, 4, 5, 6));
-        LocalDateTime drawDateTime = LocalDateTime.now().plusDays(1);
-        TicketRequest ticketRequest = TicketRequest.builder()
-                .playerId(playerId)
-                .numbers(numbers)
-                .drawDateTime(drawDateTime)
-                .build();
-
-        TicketResponse expectedResponse = TicketResponse.builder()
+        Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
+        LocalDateTime drawDate = LocalDateTime.now().plusDays(1);
+        TicketRequest request = new TicketRequest(playerId, numbers, drawDate);
+        Ticket ticket = Ticket.builder()
+                .id(UUID.randomUUID())
                 .playerId(playerId)
                 .numbers(numbers)
                 .status(TicketStatus.NEW)
-                .drawDateTime(drawDateTime)
+                .drawDateTime(drawDate)
                 .build();
 
-        when(ticketService.createTicket(any(TicketRequest.class)))
-                .thenReturn(expectedResponse);
+        when(validator.isNumbersInRange(numbers)).thenReturn(true);
+        when(ticketRepository.save(any())).thenReturn(ticket);
+        when(objectMapper.convertValue(any(), eq(TicketResponse.class))).thenReturn(new TicketResponse(playerId, numbers, drawDate, ticket.status()));
 
-        // WHEN
-        TicketResponse actualResponse = ticketFacade.createTicket(ticketRequest);
+        // when
+        TicketResponse response = ticketQueryService.createTicket(request);
 
-        // THEN
-        verify(ticketService, times(1)).createTicket(ticketRequest);
-
-        assertThat(actualResponse).isEqualTo(expectedResponse);
+        // then
+        assertThat(response).isNotNull();
+        verify(ticketRepository).save(any());
+        verify(ticketKafkaPublisher).publishTicket(any(TicketCreatedEvent.class));
     }
 
     @Test
-    void testGetTicketById_shouldCallServiceAndReturnTicketResponse() {
-        // GIVEN
-        UUID ticketId = UUID.randomUUID();
-        UUID playerId = UUID.randomUUID();
-        Set<Integer> numbers = new HashSet<>(Set.of(7, 8, 9, 10, 11, 12));
-        LocalDateTime drawDateTime = LocalDateTime.now().plusDays(2);
+    void shouldThrowExceptionWhenNumbersAreOutOfRange() {
+        // given
+        TicketRequest request = new TicketRequest(UUID.randomUUID(), Set.of(0, 100), LocalDateTime.now());
+        when(validator.isNumbersInRange(request.numbers())).thenReturn(false);
 
-        TicketResponse expectedResponse = TicketResponse.builder()
-                .playerId(playerId)
-                .numbers(numbers)
-                .status(TicketStatus.NEW)
-                .drawDateTime(drawDateTime)
-                .build();
+        // when / then
+        assertThatThrownBy(() -> ticketQueryService.createTicket(request))
+                .isInstanceOf(TicketNumbersOutOfBoundsException.class)
+                .hasMessageContaining("out of range");
 
-        when(ticketService.getTicketById(ticketId))
-                .thenReturn(expectedResponse);
-
-        // WHEN
-        TicketResponse actualResponse = ticketFacade.getTicketById(ticketId);
-
-        // THEN
-        verify(ticketService, times(1)).getTicketById(ticketId);
-
-        assertThat(actualResponse).isEqualTo(expectedResponse);
+        verify(ticketRepository, never()).save(any());
+        verify(ticketKafkaPublisher, never()).publishTicket(any());
     }
 
     @Test
-    void testGetTicketById_shouldThrowExceptionWhenServiceThrows() {
-        // GIVEN
-        UUID ticketId = UUID.randomUUID();
+    void shouldReturnTicketByIdWhenExists() {
+        // given
+        UUID id = UUID.randomUUID();
+        Ticket ticket = Ticket.builder()
+                .id(id)
+                .playerId(UUID.randomUUID())
+                .status(TicketStatus.WON)
+                .drawDateTime(LocalDateTime.now().plusDays(1))
+                .build();
+        when(ticketRepository.findById(id)).thenReturn(Optional.of(ticket));
+        when(objectMapper.convertValue(ticket, TicketResponse.class)).thenReturn(new TicketResponse(id, ticket.numbers(), ticket.drawDateTime(), ticket.status()));
 
+        // when
+        TicketResponse response = ticketQueryService.getTicketById(id);
 
-        when(ticketService.getTicketById(ticketId))
-                .thenThrow(new TicketNotFoundException("Ticket not found for ID: " + ticketId));
+        // then
+        assertThat(response).isNotNull();
+    }
 
-        // WHEN & THEN
-        assertThatThrownBy(() -> ticketFacade.getTicketById(ticketId))
+    @Test
+    void shouldThrowExceptionWhenTicketNotFound() {
+        // given
+        UUID id = UUID.randomUUID();
+        when(ticketRepository.findById(id)).thenReturn(Optional.empty());
+
+        // when / then
+        assertThatThrownBy(() -> ticketQueryService.getTicketById(id))
                 .isInstanceOf(TicketNotFoundException.class)
-                .hasMessageContaining("Ticket not found for ID: " + ticketId);
-
-        verify(ticketService, times(1)).getTicketById(ticketId);
+                .hasMessageContaining("not found");
     }
 
     @Test
-    void testGetTicketsByPlayer_shouldCallServiceAndReturnSetOfTicketResponses() {
-        // GIVEN
+    void shouldReturnTicketsByPlayerId() {
+        // given
         UUID playerId = UUID.randomUUID();
-        LocalDateTime drawDateTime = LocalDateTime.now().plusDays(3);
-
-        Set<TicketResponse> expectedResponses = new HashSet<>();
-        expectedResponses.add(TicketResponse.builder()
+        Ticket ticket = Ticket.builder()
+                .id(UUID.randomUUID())
                 .playerId(playerId)
+                .drawDateTime(LocalDateTime.now())
                 .numbers(Set.of(1, 2, 3, 4, 5, 6))
-                .status(TicketStatus.NEW)
-                .drawDateTime(drawDateTime)
-                .build());
-        expectedResponses.add(TicketResponse.builder()
-                .playerId(playerId)
-                .numbers(Set.of(7, 8, 9, 10, 11, 12))
-                .status(TicketStatus.NEW)
-                .drawDateTime(drawDateTime)
-                .build());
+                .status(TicketStatus.LOST)
+                .build();
+        when(ticketRepository.findAllByPlayerId(playerId)).thenReturn(Set.of(ticket));
+        when(objectMapper.convertValue(any(), eq(TicketResponse.class))).thenReturn(new TicketResponse(ticket.playerId(), ticket.numbers(), ticket.drawDateTime(), ticket.status()));
 
-        when(ticketService.getTicketsByPlayer(playerId))
-                .thenReturn(expectedResponses);
+        // when
+        Set<TicketResponse> tickets = ticketQueryService.getTicketsByPlayer(playerId);
 
-        // WHEN
-        Set<TicketResponse> actualResponses = ticketFacade.getTicketsByPlayer(playerId);
-
-        // THEN
-        verify(ticketService, times(1)).getTicketsByPlayer(playerId);
-
-        assertThat(actualResponses).containsExactlyInAnyOrderElementsOf(expectedResponses);
+        // then
+        assertThat(tickets).hasSize(1);
     }
 
     @Test
-    void testFindTicketsForDraw_shouldCallServiceAndReturnSetOfTickets() {
-        // GIVEN
-        LocalDateTime drawTime = LocalDateTime.now().plusHours(1);
+    void shouldFindTicketsForDraw() {
+        // given
+        LocalDateTime drawTime = LocalDateTime.now();
+        Ticket ticket = Ticket.builder().status(TicketStatus.NEW).drawDateTime(drawTime.minusDays(1)).build();
+        when(ticketRepository.findAllByDrawDateTimeBeforeAndStatus(drawTime, TicketStatus.NEW))
+                .thenReturn(Set.of(ticket));
 
-        Set<Ticket> expectedTickets = new HashSet<>();
-        expectedTickets.add(Ticket.builder()
-                .id(UUID.randomUUID())
-                .playerId(UUID.randomUUID())
-                .numbers(Set.of(1, 2, 3, 4, 5, 6))
-                .status(TicketStatus.NEW)
-                .drawDateTime(drawTime)
-                .build());
-        expectedTickets.add(Ticket.builder()
-                .id(UUID.randomUUID())
-                .playerId(UUID.randomUUID())
-                .numbers(Set.of(13, 14, 15, 16, 17, 18))
-                .status(TicketStatus.NEW)
-                .drawDateTime(drawTime)
-                .build());
+        // when
+        Set<Ticket> result = ticketQueryService.findTicketsForDraw(drawTime);
 
-        when(ticketService.findTicketsForDraw(drawTime))
-                .thenReturn(expectedTickets);
-
-        // WHEN
-        Set<Ticket> actualTickets = ticketFacade.findTicketsForDraw(drawTime);
-
-        // THEN
-        verify(ticketService, times(1)).findTicketsForDraw(drawTime);
-
-        assertThat(actualTickets).containsExactlyInAnyOrderElementsOf(expectedTickets);
-    }
-
-    @Test
-    void testFindTicketsForDraw_shouldReturnEmptySetWhenNoTicketsFound() {
-        // GIVEN
-        LocalDateTime drawTime = LocalDateTime.now().plusHours(1);
-
-        when(ticketService.findTicketsForDraw(drawTime))
-                .thenReturn(Collections.emptySet());
-
-        // WHEN
-        Set<Ticket> actualTickets = ticketFacade.findTicketsForDraw(drawTime);
-
-        // THEN
-        verify(ticketService, times(1)).findTicketsForDraw(drawTime);
-        assertThat(actualTickets).isEmpty();
+        // then
+        assertThat(result).hasSize(1);
     }
 }

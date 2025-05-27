@@ -14,16 +14,17 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-class TicketService {
+public class TicketQueryServiceImpl implements TicketQueryService {
 
     private final TicketRepository ticketRepository;
     private final ObjectMapper objectMapper;
     private final TicketKafkaPublisher ticketKafkaPublisher;
     private final TicketNumbersValidator validator;
     private static final String TICKET_NOT_FOUND = "Ticket not found";
-    private static final String TICKET_OUT_OF_RANGE = "Ticket numbers out of range";
+    private static final String TICKET_NUMBERS_OUT_OF_RANGE = "Ticket numbers out of range";
 
-    TicketResponse createTicket(TicketRequest ticketRequest) {
+    @Override
+    public TicketResponse createTicket(TicketRequest ticketRequest) {
         Set<Integer> numbers = ticketRequest.numbers();
         if (validator.isNumbersInRange(numbers)) {
             Ticket ticket = getTicket(ticketRequest);
@@ -38,7 +39,7 @@ class TicketService {
             ticketKafkaPublisher.publishTicket(ticketEvent);
             return objectMapper.convertValue(ticketSaved, TicketResponse.class);
         }
-        throw new TicketNumbersOutOfBoundsException(TICKET_OUT_OF_RANGE);
+        throw new TicketNumbersOutOfBoundsException(TICKET_NUMBERS_OUT_OF_RANGE);
     }
 
     private static Ticket getTicket(TicketRequest ticketRequest) {
@@ -51,18 +52,21 @@ class TicketService {
                 .build();
     }
 
+    @Override
     public TicketResponse getTicketById(UUID id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(TICKET_NOT_FOUND));
         return objectMapper.convertValue(ticket, TicketResponse.class);
     }
 
+    @Override
     public Set<TicketResponse> getTicketsByPlayer(UUID playerId) {
         return ticketRepository.findAllByPlayerId(playerId).stream()
                 .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
                 .collect(Collectors.toSet());
     }
 
+    @Override
     public Set<Ticket> findTicketsForDraw(LocalDateTime drawTime) {
         return ticketRepository.findAllByDrawDateTimeBeforeAndStatus(drawTime, TicketStatus.NEW);
     }

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "ticket.numbers")
+@ConfigurationProperties(prefix = "ticket.winNumbers")
 @Builder
 @Getter
 public class TicketNumbersValidatorConfigurationProperties {

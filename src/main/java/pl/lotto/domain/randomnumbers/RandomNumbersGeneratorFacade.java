@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class RandomNumbersGeneratorFacade {
-    private final RandomNumbersGeneratorQueryServiceImpl randomNumbersGeneratorQueryServiceImpl;
+    private final RandomNumbersGeneratorQueryService randomNumbersGeneratorQueryServiceImpl;
 
     void generate() {
         randomNumbersGeneratorQueryServiceImpl.generate();

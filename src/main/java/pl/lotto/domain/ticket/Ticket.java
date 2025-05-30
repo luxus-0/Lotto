@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-@Document(collection = "players")
+@Document(collection = "tickets")
 @Builder
 public record Ticket(
         @Id UUID id,

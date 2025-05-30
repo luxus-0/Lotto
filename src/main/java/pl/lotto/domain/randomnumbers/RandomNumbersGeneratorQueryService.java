@@ -12,14 +12,13 @@ import java.util.random.RandomGenerator;
 @Component
 @AllArgsConstructor
 @Log4j2
-public class RandomNumbersGeneratorQueryServiceImpl implements RandomNumberGeneratorQueryService {
+public class RandomNumbersGeneratorQueryService {
 
     private final RandomNumbersValidatorConfigurationProperties properties;
     private final RandomNumbersRepository randomNumbersRepository;
     private final RandomNumbersValidator validator;
 
     @Scheduled(cron = "${random.numbers.cron}")
-    @Override
     public void generate() {
         Set<Integer> randomNumbers = generateUniqueNumbers();
         if (validator.validate(randomNumbers)) {
@@ -30,7 +29,7 @@ public class RandomNumbersGeneratorQueryServiceImpl implements RandomNumberGener
         throw new RandomNumbersNotFoundException("Random numbers not found");
     }
 
-    Set<Integer> generateUniqueNumbers() {
+    public Set<Integer> generateUniqueNumbers() {
         int min = properties.min();
         int max = properties.max();
         int count = properties.count();

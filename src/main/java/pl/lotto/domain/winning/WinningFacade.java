@@ -2,9 +2,7 @@ package pl.lotto.domain.winning;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import pl.lotto.domain.drawdatetime.DrawDateTimeQueryService;
-import pl.lotto.domain.player.PlayerRepository;
-import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorFacade;
+import pl.lotto.domain.drawdatetime.DrawDateTimeFacade;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,18 +14,22 @@ import java.util.UUID;
 class WinningFacade {
 
     private final WinningRepository winningRepository;
-    private final DrawDateTimeQueryService drawDateTimeService;
+    private final DrawDateTimeFacade drawDateTimeFacade;
     private final WinningService winningService;
 
-    WinningResponse getWinning(WinningRequest winningRequest) {
+    WinningResponse getWinnerResult(WinningRequest winningRequest) {
         Set<Integer> playerNumbers = winningRequest.playerNumbers();
         UUID playerId = winningRequest.playerId();
         Set<Integer> winnerNumbers = winningService.getWinnerNumbers(playerNumbers);
         Integer hits = winningService.countHits(playerNumbers, winnerNumbers);
         BigDecimal priceForHits = winningService.calculatePrice(hits);
-        LocalDateTime drawDate = drawDateTimeService.generateDrawDateTime();
+        LocalDateTime drawDate = drawDateTimeFacade.generate();
         Winning winning = new Winning(UUID.randomUUID(), playerId, hits, priceForHits, drawDate);
-        winningRepository.save(winning);
-        return new WinningResponse(playerId, hits, priceForHits);
+        Winning savedWinning = winningRepository.save(winning);
+        return new WinningResponse(
+                savedWinning.getPlayerId(),
+                savedWinning.getHits(),
+                savedWinning.getPrice(),
+                savedWinning.getDrawDate());
     }
 }

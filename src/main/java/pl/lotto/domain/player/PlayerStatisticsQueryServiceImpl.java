@@ -11,13 +11,12 @@ import pl.lotto.domain.ticket.TicketQueryServiceImpl;
 @Service
 @AllArgsConstructor
 public class PlayerStatisticsQueryServiceImpl implements PlayerStatisticsQueryService {
-    private final RandomNumbersGeneratorQueryServiceImpl randomNumbersQueryServiceImpl;
-    private final DrawDateTimeQueryServiceImpl drawDateTimeQueryServiceImpl;
+    private final RandomNumbersGeneratorQueryServiceImpl randomNumbersQueryService;
+    private final DrawDateTimeQueryServiceImpl drawDateTimeQueryService;
     private final TicketQueryServiceImpl ticketQueryService;
 
     @Override
     public PlayerStatistics generateStats(PlayerRequest playerRequest) {
-
         return PlayerStatistics.builder()
                 .build();
     }

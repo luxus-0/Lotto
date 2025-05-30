@@ -18,7 +18,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class TicketQueryServiceImplTest {
+class TicketQueryServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
@@ -33,7 +33,7 @@ class TicketQueryServiceImplTest {
     private TicketNumbersValidator validator;
 
     @InjectMocks
-    private TicketQueryServiceImpl ticketQueryService;
+    private TicketQueryService ticketQueryService;
 
     @BeforeEach
     void setUp() {

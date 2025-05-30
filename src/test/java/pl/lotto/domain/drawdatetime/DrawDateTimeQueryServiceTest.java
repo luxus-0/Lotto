@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-class DrawDateTimeQueryServiceImplTest {
+class DrawDateTimeQueryServiceTest {
 
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
@@ -25,7 +25,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 10, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(properties, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(properties, clock);
         // when
         LocalDateTime result = service.generateDrawDateTime();
 
@@ -40,7 +40,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 14, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(properties, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(properties, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -56,7 +56,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 14, 14, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0); // sobota
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(properties, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(properties, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -72,7 +72,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 18, 10, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(properties, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(properties, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -88,7 +88,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 12, 0);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties properties = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(properties, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(properties, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -103,7 +103,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 12, 0, 1);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -124,7 +124,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime expected = LocalDateTime.parse(expectedStr);
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -145,7 +145,7 @@ class DrawDateTimeQueryServiceImplTest {
                 0,
                 0
         );
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime actualDrawDateTime = service.generateDrawDateTime();
@@ -167,7 +167,7 @@ class DrawDateTimeQueryServiceImplTest {
                 0,
                 0
         );
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime actualDrawDateTime = service.generateDrawDateTime();
@@ -189,7 +189,7 @@ class DrawDateTimeQueryServiceImplTest {
                 0,
                 0
         );
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime actualDrawDateTime = service.generateDrawDateTime();
@@ -206,7 +206,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.of(2025, 5, 17, 10, 0);
         Clock clock = Clock.fixed(now.atZone(zone).toInstant(), zone);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();
@@ -221,7 +221,7 @@ class DrawDateTimeQueryServiceImplTest {
         LocalDateTime now = LocalDateTime.now();
         Clock clock = Clock.fixed(now.atZone(ZONE_ID).toInstant(), ZONE_ID);
         DrawDateTimeConfigurationProperties props = new DrawDateTimeConfigurationProperties(6, 12, 0, 0, 0);
-        DrawDateTimeQueryServiceImpl service = new DrawDateTimeQueryServiceImpl(props, clock);
+        DrawDateTimeQueryService service = new DrawDateTimeQueryService(props, clock);
 
         // when
         LocalDateTime result = service.generateDrawDateTime();

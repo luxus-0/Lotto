@@ -13,7 +13,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/players")
 @RequiredArgsConstructor
-public class PlayerController {
+public class PlayerRegistrationController {
 
     private final PlayerFacade playerFacade;
 
@@ -24,23 +24,5 @@ public class PlayerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PlayerResponse> getPlayer(@PathVariable UUID id) {
-        PlayerResponse response = playerFacade.find(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping
-    public ResponseEntity<Set<PlayerResponse>> getAllPlayers() {
-        Set<PlayerResponse> players = playerFacade.findAll();
-        return ResponseEntity.ok(players);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable UUID id) {
-        playerFacade.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

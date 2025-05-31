@@ -6,6 +6,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
+import pl.lotto.domain.player.exceptions.PlayerAlreadyExistsException;
+import pl.lotto.domain.player.exceptions.PlayerNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;

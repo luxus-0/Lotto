@@ -10,6 +10,8 @@ import org.mockito.MockitoAnnotations;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
 import pl.lotto.domain.player.dto.PlayerStatistics;
+import pl.lotto.domain.player.exceptions.PlayerAlreadyExistsException;
+import pl.lotto.domain.player.exceptions.PlayerNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.*;

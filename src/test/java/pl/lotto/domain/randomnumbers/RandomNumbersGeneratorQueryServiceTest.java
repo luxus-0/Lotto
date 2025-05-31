@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-class RandomNumbersGeneratorQueryServiceAImplTest {
+class RandomNumbersGeneratorQueryServiceTest {
 
     @Mock
     private RandomNumbersValidatorConfigurationProperties properties;
@@ -26,7 +26,7 @@ class RandomNumbersGeneratorQueryServiceAImplTest {
     private RandomNumbersValidator validator;
 
     @InjectMocks
-    private RandomNumbersGeneratorQueryServiceImpl service;
+    private RandomNumbersGeneratorQueryService service;
 
     @Test
     void shouldGenerateCorrectAmountOfUniqueNumbersInRange() {

@@ -2,6 +2,8 @@ package pl.lotto.domain.randomnumbers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsException;
 
 import java.util.Set;
 

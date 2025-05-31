@@ -1,4 +1,4 @@
-package pl.lotto.domain.randomnumbers;
+package pl.lotto.domain.randomnumbers.exceptions;
 
 public class RandomNumbersOutOfBoundsException extends RuntimeException {
     public RandomNumbersOutOfBoundsException(String message) {

@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsException;
 
 import java.util.Set;
 

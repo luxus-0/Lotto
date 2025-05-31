@@ -3,6 +3,8 @@ package pl.lotto.domain.winning;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.lotto.domain.drawdatetime.DrawDateTimeFacade;
+import pl.lotto.domain.winning.dto.WinningRequest;
+import pl.lotto.domain.winning.dto.WinningResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

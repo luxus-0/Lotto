@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static pl.lotto.domain.player.PlayerRegexMessage.*;
+import static pl.lotto.domain.player.PlayerConstantValidation.*;
 
 @Document(collection = "players")
 @Builder

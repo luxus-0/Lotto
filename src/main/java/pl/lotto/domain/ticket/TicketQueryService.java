@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class TicketQueryService {
 
     private static final String TICKET_NOT_FOUND = "Ticket not found";
-    private static final String TICKET_NUMBERS_OUT_OF_RANGE = "Ticket numbers out of range";
     private final TicketRepository ticketRepository;
     private final ObjectMapper objectMapper;
     private final TicketKafkaPublisher ticketKafkaPublisher;
@@ -48,7 +47,7 @@ public class TicketQueryService {
             ticketKafkaPublisher.publishTicket(ticketEvent);
             return objectMapper.convertValue(ticketSaved, TicketResponse.class);
         }
-        throw new TicketNumbersOutOfBoundsException(TICKET_NUMBERS_OUT_OF_RANGE);
+        throw new TicketNotFoundException(TICKET_NOT_FOUND);
     }
 
     public TicketResponse getTicketById(UUID id) {

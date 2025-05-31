@@ -16,7 +16,7 @@ import java.util.UUID;
 public record TicketResponse(@NotEmpty(message = "{not.empty.playerId}") UUID playerId,
                              @NotBlank(message = "{not.empty.numbers}") Set<Integer> numbers,
 
-                             @NotEmpty(message = "{not.empty.drawDate}")
+                             @NotEmpty(message = "{not.empty.dateTime}")
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime drawDate,
 
                              @NotEmpty(message = "{not.empty.status}") @Enumerated(value = EnumType.STRING) TicketStatus status) {

@@ -35,7 +35,7 @@ class PlayerFacadeTest {
                 .playerId(UUID.randomUUID())
                 .build();
 
-        PlayerRequest request = new PlayerRequest(UUID.randomUUID(),"John", "Doe", "john@example.com", playerStatistics);
+        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", playerStatistics);
         PlayerResponse expectedResponse = PlayerResponse.builder()
                 .id(UUID.randomUUID())
                 .name("John")

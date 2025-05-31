@@ -15,6 +15,15 @@ public class DrawDateTimeCalculator {
         this.properties = properties;
     }
 
+    private static LocalDateTime getNextDrawDate(LocalDateTime now, int today, int drawDay, LocalDateTime drawDateTime) {
+        DayOfWeek drawDayOfWeek = DayOfWeek.of(drawDay);
+
+        if (today > drawDay || (today == drawDay && now.toLocalTime().isAfter(drawDateTime.toLocalTime()))) {
+            return drawDateTime.with(TemporalAdjusters.next(drawDayOfWeek));
+        }
+        return drawDateTime.with(TemporalAdjusters.nextOrSame(drawDayOfWeek));
+    }
+
     LocalDateTime calculateNextDrawDate(LocalDateTime now) {
         int today = now.getDayOfWeek().getValue();
         int drawDay = properties.day();
@@ -28,14 +37,5 @@ public class DrawDateTimeCalculator {
                 .withMinute(properties.minute())
                 .withSecond(properties.second())
                 .withNano(properties.nanosecond());
-    }
-
-    private static LocalDateTime getNextDrawDate(LocalDateTime now, int today, int drawDay, LocalDateTime drawDateTime) {
-        DayOfWeek drawDayOfWeek = DayOfWeek.of(drawDay);
-
-        if (today > drawDay || (today == drawDay && now.toLocalTime().isAfter(drawDateTime.toLocalTime()))) {
-            return drawDateTime.with(TemporalAdjusters.next(drawDayOfWeek));
-        }
-        return drawDateTime.with(TemporalAdjusters.nextOrSame(drawDayOfWeek));
     }
 }

@@ -1,5 +1,6 @@
 package pl.lotto.domain.winning;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class WinningController {
     private final WinningFacade winningFacade;
 
     @PostMapping
-    public ResponseEntity<WinningResponse> getWinnerResult(@RequestBody WinningRequest request) {
+    public ResponseEntity<WinningResponse> getWinnerResult(@RequestBody @Valid WinningRequest request) {
         WinningResponse response = winningFacade.getWinnerResult(request);
         return ResponseEntity.status(CREATED).body(response);
     }

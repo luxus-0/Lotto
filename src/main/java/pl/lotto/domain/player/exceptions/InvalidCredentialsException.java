@@ -1,4 +1,4 @@
-package pl.lotto.domain.player;
+package pl.lotto.domain.player.exceptions;
 
 class InvalidCredentialsException extends RuntimeException {
     public InvalidCredentialsException(String message) {

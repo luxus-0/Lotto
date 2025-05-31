@@ -1,6 +1,6 @@
-package pl.lotto.domain.player;
+package pl.lotto.domain.player.exceptions;
 
-class PlayerAlreadyExistsException extends RuntimeException {
+public class PlayerAlreadyExistsException extends RuntimeException {
     public PlayerAlreadyExistsException(String message, Object... args) {
         super(String.format(message.replace("{}", "%s"), args));
     }

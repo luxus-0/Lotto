@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
 
-class PlayerQueryServiceImplTest {
+class PlayerQueryServiceAImplTest {
 
     @Mock
     private PlayerRepository playerRepository;
@@ -27,7 +27,7 @@ class PlayerQueryServiceImplTest {
     private ObjectMapper objectMapper;
 
     @InjectMocks
-    private PlayerQueryServiceImpl playerService;
+    private PlayerQueryService playerService;
 
     @BeforeEach
     void setUp() {

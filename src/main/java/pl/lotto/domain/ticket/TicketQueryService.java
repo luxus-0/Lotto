@@ -16,12 +16,22 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TicketQueryService {
 
+    private static final String TICKET_NOT_FOUND = "Ticket not found";
+    private static final String TICKET_NUMBERS_OUT_OF_RANGE = "Ticket numbers out of range";
     private final TicketRepository ticketRepository;
     private final ObjectMapper objectMapper;
     private final TicketKafkaPublisher ticketKafkaPublisher;
     private final TicketNumbersValidator validator;
-    private static final String TICKET_NOT_FOUND = "Ticket not found";
-    private static final String TICKET_NUMBERS_OUT_OF_RANGE = "Ticket numbers out of range";
+
+    private static Ticket getTicket(TicketRequest ticketRequest) {
+        return Ticket.builder()
+                .id(UUID.randomUUID())
+                .playerId(ticketRequest.playerId())
+                .numbers(ticketRequest.numbers())
+                .status(TicketStatus.NEW)
+                .drawDateTime(ticketRequest.drawDateTime())
+                .build();
+    }
 
     public TicketResponse createTicket(TicketRequest ticketRequest) {
         Set<Integer> numbers = ticketRequest.numbers();
@@ -39,16 +49,6 @@ public class TicketQueryService {
             return objectMapper.convertValue(ticketSaved, TicketResponse.class);
         }
         throw new TicketNumbersOutOfBoundsException(TICKET_NUMBERS_OUT_OF_RANGE);
-    }
-
-    private static Ticket getTicket(TicketRequest ticketRequest) {
-        return Ticket.builder()
-                .id(UUID.randomUUID())
-                .playerId(ticketRequest.playerId())
-                .numbers(ticketRequest.numbers())
-                .status(TicketStatus.NEW)
-                .drawDateTime(ticketRequest.drawDateTime())
-                .build();
     }
 
     public TicketResponse getTicketById(UUID id) {

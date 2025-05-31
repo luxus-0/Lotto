@@ -9,7 +9,6 @@ import lombok.Builder;
 import java.util.UUID;
 
 import static pl.lotto.domain.player.PlayerConstantValidation.*;
-import static pl.lotto.domain.player.PlayerConstantValidation.SURNAME_REGEX_MESSAGE;
 
 @Builder
 public record PlayerRequest(

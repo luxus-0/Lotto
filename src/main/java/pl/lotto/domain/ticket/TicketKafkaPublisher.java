@@ -10,9 +10,8 @@ import pl.lotto.domain.ticket.dto.TicketCreatedEvent;
 @RequiredArgsConstructor
 @Log4j2
 public class TicketKafkaPublisher {
-    private final KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate;
-
     private static final String TICKET_TOPIC = "ticket.created";
+    private final KafkaTemplate<String, TicketCreatedEvent> kafkaTemplate;
 
     public void publishTicket(TicketCreatedEvent event) {
         kafkaTemplate.send(TICKET_TOPIC, event.ticketId().toString(), event);

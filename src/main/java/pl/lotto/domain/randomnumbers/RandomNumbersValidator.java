@@ -18,7 +18,7 @@ public class RandomNumbersValidator {
 
     private void validateInput(Set<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
-            throw new RandomNumbersNotFoundException("Provided winNumbers are null or empty.");
+            throw new RandomNumbersNotFoundException("Random numbers not found");
         }
     }
 

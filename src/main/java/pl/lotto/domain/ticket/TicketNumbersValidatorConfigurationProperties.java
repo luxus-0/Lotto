@@ -1,5 +1,7 @@
 package pl.lotto.domain.ticket;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,6 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder
 @Getter
 public class TicketNumbersValidatorConfigurationProperties {
+    @Min(1)
     private Integer min;
+    @Max(99)
     private Integer max;
 }

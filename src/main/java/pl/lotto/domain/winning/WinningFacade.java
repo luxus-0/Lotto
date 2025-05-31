@@ -16,20 +16,29 @@ class WinningFacade {
     private final WinningRepository winningRepository;
     private final DrawDateTimeFacade drawDateTimeFacade;
     private final WinningService winningService;
+    private final WinningValidator validator;
 
     WinningResponse getWinnerResult(WinningRequest winningRequest) {
-        Set<Integer> playerNumbers = winningRequest.playerNumbers();
-        UUID playerId = winningRequest.playerId();
-        Set<Integer> winnerNumbers = winningService.getWinnerNumbers(playerNumbers);
-        Integer hits = winningService.countHits(playerNumbers, winnerNumbers);
-        BigDecimal priceForHits = winningService.calculatePrice(hits);
-        LocalDateTime drawDate = drawDateTimeFacade.generate();
-        Winning winning = new Winning(UUID.randomUUID(), playerId, hits, priceForHits, drawDate);
-        Winning savedWinning = winningRepository.save(winning);
-        return new WinningResponse(
-                savedWinning.getPlayerId(),
-                savedWinning.getHits(),
-                savedWinning.getPrice(),
-                savedWinning.getDrawDate());
+        if (validator.valid(winningRequest)) {
+            Set<Integer> playerNumbers = winningRequest.playerNumbers();
+            UUID playerId = winningRequest.playerId();
+            Set<Integer> winnerNumbers = winningService.getWinnerNumbers(playerNumbers);
+            Integer hits = winningService.countHits(playerNumbers, winnerNumbers);
+            BigDecimal priceForHits = winningService.calculatePrice(hits);
+            LocalDateTime drawDate = drawDateTimeFacade.generate();
+            Winning winning = new Winning(UUID.randomUUID(), playerId, hits, priceForHits, drawDate);
+            Winning savedWinning = winningRepository.save(winning);
+            return new WinningResponse(
+                    savedWinning.getPlayerId(),
+                    savedWinning.getHits(),
+                    savedWinning.getPrice(),
+                    savedWinning.getDrawDate(),
+                    true);
+        }
+        return WinningResponse.builder()
+                .price(BigDecimal.ZERO)
+                .hits(0)
+                .isWinner(false)
+                .build();
     }
 }

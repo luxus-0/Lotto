@@ -1,6 +1,8 @@
 package pl.lotto.domain.winning;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,6 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder
 @Getter
 public class WinningNumbersConfigurationProperties {
-    @NotEmpty(message = "Empty min hits") private int minHits;
-    @NotEmpty(message = "Empty price") private double pricePerHit;
+    @NotNull(message = "null min hits") @Min(0) private int minHits;
+    @NotNull(message = "null price") private double pricePerHit;
 }

@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.lotto.domain.drawdatetime.DrawDateTimeFacade;
-import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -105,11 +104,11 @@ public class WinningsFacadeTest {
 
         when(drawDateTimeFacade.generate()).thenReturn(drawDate);
         when(repository.save(any(Winning.class))).thenReturn(Winning.builder()
-                        .id(UUID.randomUUID())
-                        .hits(3)
-                        .playerId(playerId)
-                        .price(BigDecimal.valueOf(2380.0))
-                        .drawDate(drawDate)
+                .id(UUID.randomUUID())
+                .hits(3)
+                .playerId(playerId)
+                .price(BigDecimal.valueOf(2380.0))
+                .drawDate(drawDate)
                 .build());
 
         WinningRequest request = new WinningRequest(playerId, playerNumbers, randomNumbers, drawDate);
@@ -286,11 +285,11 @@ public class WinningsFacadeTest {
 
         when(drawDateTimeFacade.generate()).thenReturn(drawDate);
         when(repository.save(any(Winning.class))).thenReturn(Winning.builder()
-                        .id(UUID.randomUUID())
-                        .playerId(playerId)
-                        .price(BigDecimal.valueOf(2380.0))
-                        .hits(2)
-                        .drawDate(drawDate)
+                .id(UUID.randomUUID())
+                .playerId(playerId)
+                .price(BigDecimal.valueOf(2380.0))
+                .hits(2)
+                .drawDate(drawDate)
                 .build());
         when(validator.valid(any(WinningRequest.class))).thenReturn(true);
 

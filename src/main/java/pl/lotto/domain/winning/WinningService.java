@@ -24,8 +24,8 @@ public class WinningService {
                 .count());
     }
 
-    BigDecimal calculatePrice(Integer hits){
-        if(hits < MIN_HITS){
+    BigDecimal calculatePrice(Integer hits) {
+        if (hits < MIN_HITS) {
             return BigDecimal.ZERO;
         }
         return BigDecimal.valueOf(hits).multiply(BigDecimal.valueOf(PRICE));

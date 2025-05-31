@@ -1,6 +1,5 @@
 package pl.lotto.domain.ticket.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;

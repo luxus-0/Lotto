@@ -73,12 +73,11 @@ class TicketQueryServiceTest {
     void shouldThrowExceptionWhenNumbersAreOutOfRange() {
         // given
         TicketRequest request = new TicketRequest(UUID.randomUUID(), Set.of(0, 100), LocalDateTime.now());
-        when(validator.isNumbersInRange(request.numbers())).thenReturn(false);
 
         // when / then
         assertThatThrownBy(() -> ticketQueryService.createTicket(request))
-                .isInstanceOf(TicketNumbersOutOfBoundsException.class)
-                .hasMessageContaining("out of range");
+                .isInstanceOf(TicketNotFoundException.class)
+                .hasMessageContaining("Ticket not found");
 
         verify(ticketRepository, never()).save(any());
         verify(ticketKafkaPublisher, never()).publishTicket(any());

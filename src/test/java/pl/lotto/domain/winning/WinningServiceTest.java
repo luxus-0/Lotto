@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
 import pl.lotto.domain.randomnumbers.RandomNumbersNotFoundException;
+import pl.lotto.domain.winning.exeptions.NumbersHasTheSameSizeException;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -25,6 +26,8 @@ class WinningServiceTest {
     private RandomNumbersGeneratorQueryService randomNumbersService;
     @InjectMocks
     private WinningService winningService;
+    @Mock
+    private WinningNumbersConfigurationProperties properties;
 
     @Test
     @DisplayName("should count 3 hits when player numbers and winning numbers have 3 common elements")
@@ -120,7 +123,7 @@ class WinningServiceTest {
         BigDecimal price = winningService.calculatePrice(hits);
 
         // Then
-        assertThat(price).isEqualTo(BigDecimal.ZERO);
+        assertThat(price).isEqualTo(BigDecimal.valueOf(0.0));
     }
 
     @Test
@@ -129,6 +132,9 @@ class WinningServiceTest {
         // Given
         Integer hits = 3;
         BigDecimal expectedPrice = BigDecimal.valueOf(3).multiply(BigDecimal.valueOf(340.0));
+
+        when(properties.getMinHits()).thenReturn(hits);
+        when(properties.getPricePerHit()).thenReturn(340.0);
 
         // When
         BigDecimal price = winningService.calculatePrice(hits);
@@ -143,6 +149,9 @@ class WinningServiceTest {
         // Given
         Integer hits = 6;
         BigDecimal expectedPrice = BigDecimal.valueOf(6).multiply(BigDecimal.valueOf(340.0));
+
+        when(properties.getMinHits()).thenReturn(6);
+        when(properties.getPricePerHit()).thenReturn(340.0);
 
         // When
         BigDecimal price = winningService.calculatePrice(hits);
@@ -161,7 +170,7 @@ class WinningServiceTest {
         BigDecimal price = winningService.calculatePrice(hits);
 
         // Then
-        assertThat(price).isEqualTo(BigDecimal.ZERO);
+        assertThat(price).isEqualTo(BigDecimal.valueOf(0.0));
     }
 
     @Test
@@ -208,7 +217,7 @@ class WinningServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> winningService.getWinnerNumbers(playerNumbers))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(NumbersHasTheSameSizeException.class)
                 .hasMessageContaining("Player numbers and random numbers must have the same size.");
 
         verify(randomNumbersService, times(1)).generateUniqueNumbers();

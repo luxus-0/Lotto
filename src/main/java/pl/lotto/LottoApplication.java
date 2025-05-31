@@ -6,13 +6,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import pl.lotto.domain.drawdatetime.DrawDateTimeConfigurationProperties;
 import pl.lotto.domain.randomnumbers.RandomNumbersValidatorConfigurationProperties;
 import pl.lotto.domain.ticket.TicketNumbersValidatorConfigurationProperties;
+import pl.lotto.domain.winning.WinningNumbersConfigurationProperties;
 import pl.lotto.infrastructure.token.TokenConfigurationProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties({TokenConfigurationProperties.class,
         RandomNumbersValidatorConfigurationProperties.class,
         DrawDateTimeConfigurationProperties.class,
-        TicketNumbersValidatorConfigurationProperties.class})
+        TicketNumbersValidatorConfigurationProperties.class,
+        WinningNumbersConfigurationProperties.class})
 public class LottoApplication {
 
     public static void main(String[] args) {

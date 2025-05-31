@@ -3,7 +3,7 @@ package pl.lotto.domain.winning;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
-import pl.lotto.domain.randomnumbers.RandomNumbersNotFoundException;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.winning.exeptions.NumbersHasTheSameSizeException;
 
 import java.math.BigDecimal;

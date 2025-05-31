@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.lotto.domain.drawdatetime.DrawDateTimeFacade;
+import pl.lotto.domain.winning.dto.WinningRequest;
+import pl.lotto.domain.winning.dto.WinningResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

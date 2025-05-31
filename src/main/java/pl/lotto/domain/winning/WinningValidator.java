@@ -1,7 +1,8 @@
 package pl.lotto.domain.winning;
 
 import org.springframework.stereotype.Service;
-import pl.lotto.domain.randomnumbers.RandomNumbersNotFoundException;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
+import pl.lotto.domain.winning.dto.WinningRequest;
 import pl.lotto.domain.winning.exeptions.PlayerIdNotFoundException;
 import pl.lotto.domain.winning.exeptions.PlayerNumbersNotFoundExceptions;
 import pl.lotto.domain.winning.exeptions.WinningDateNotFoundException;

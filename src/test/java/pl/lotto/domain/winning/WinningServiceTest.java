@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
-import pl.lotto.domain.randomnumbers.RandomNumbersNotFoundException;
+import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.winning.exeptions.NumbersHasTheSameSizeException;
 
 import java.math.BigDecimal;

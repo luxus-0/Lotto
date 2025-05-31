@@ -1,21 +1,25 @@
 package pl.lotto.domain.winning;
 
 import org.springframework.stereotype.Service;
+import pl.lotto.domain.randomnumbers.RandomNumbersNotFoundException;
+import pl.lotto.domain.winning.exeptions.PlayerIdNotFoundException;
+import pl.lotto.domain.winning.exeptions.PlayerNumbersNotFoundExceptions;
+import pl.lotto.domain.winning.exeptions.WinningDateNotFoundException;
 
 @Service
 class WinningValidator {
     boolean valid(WinningRequest winningRequest) {
         if (winningRequest.playerNumbers() == null || winningRequest.playerNumbers().isEmpty()) {
-            throw new IllegalArgumentException("player numbers cannot be null or empty");
+            throw new PlayerNumbersNotFoundExceptions("player numbers cannot be null or empty");
         }
-        if (winningRequest.drawNumbers() == null || winningRequest.drawNumbers().isEmpty()) {
-            throw new IllegalArgumentException("Draw numbers cannot be null or empty");
+        if (winningRequest.randomNumbers() == null || winningRequest.randomNumbers().isEmpty()) {
+            throw new RandomNumbersNotFoundException("Random numbers cannot be null or empty");
         }
-        if (winningRequest.drawDate() == null) {
-            throw new IllegalArgumentException("Draw date cannot be null");
+        if (winningRequest.dateTime() == null) {
+            throw new WinningDateNotFoundException("Winning date not found");
         }
         if (winningRequest.playerId() == null) {
-            throw new IllegalArgumentException("Player id cannot be null");
+            throw new PlayerIdNotFoundException("Player id cannot be null");
         }
         return true;
     }

@@ -3,6 +3,8 @@ package pl.lotto.domain.winning;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
+import pl.lotto.domain.randomnumbers.RandomNumbersNotFoundException;
+import pl.lotto.domain.winning.exeptions.NumbersHasTheSameSizeException;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -13,8 +15,7 @@ import java.util.stream.Collectors;
 public class WinningService {
 
 
-    private static final double PRICE = 340;
-    private static final int MIN_HITS = 3;
+    private final WinningNumbersConfigurationProperties properties;
     private final RandomNumbersGeneratorQueryService randomNumbersService;
 
 
@@ -25,16 +26,19 @@ public class WinningService {
     }
 
     BigDecimal calculatePrice(Integer hits) {
-        if (hits < MIN_HITS) {
+        if (hits < properties.getMinHits()) {
             return BigDecimal.ZERO;
         }
-        return BigDecimal.valueOf(hits).multiply(BigDecimal.valueOf(PRICE));
+        return BigDecimal.valueOf(hits).multiply(BigDecimal.valueOf(properties.getPricePerHit()));
     }
 
     Set<Integer> getWinnerNumbers(Set<Integer> playerNumbers) {
         Set<Integer> randomNumbers = randomNumbersService.generateUniqueNumbers();
+        if (randomNumbers == null) {
+            throw new RandomNumbersNotFoundException("Random numbers not found");
+        }
         if (randomNumbers.size() != playerNumbers.size()) {
-            throw new IllegalStateException("Player numbers and random numbers must have the same size.");
+            throw new NumbersHasTheSameSizeException("Player numbers and random numbers must have the same size.");
         }
         return playerNumbers.stream()
                 .filter(randomNumbers::contains)

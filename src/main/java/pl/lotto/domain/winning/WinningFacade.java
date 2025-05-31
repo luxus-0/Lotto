@@ -28,17 +28,25 @@ class WinningFacade {
             LocalDateTime drawDate = drawDateTimeFacade.generate();
             Winning winning = new Winning(UUID.randomUUID(), playerId, hits, priceForHits, drawDate);
             Winning savedWinning = winningRepository.save(winning);
-            return new WinningResponse(
-                    savedWinning.getPlayerId(),
-                    savedWinning.getHits(),
-                    savedWinning.getPrice(),
-                    savedWinning.getDrawDate(),
-                    true);
+            return getWinner(savedWinning);
         }
+        return getLose();
+    }
+
+    private static WinningResponse getLose() {
         return WinningResponse.builder()
                 .price(BigDecimal.ZERO)
                 .hits(0)
                 .isWinner(false)
                 .build();
+    }
+
+    private static WinningResponse getWinner(Winning savedWinning) {
+        return new WinningResponse(
+                savedWinning.getPlayerId(),
+                savedWinning.getHits(),
+                savedWinning.getPrice(),
+                savedWinning.getDrawDate(),
+                true);
     }
 }

@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public record WinningRequest(@NotEmpty(message = "{not.empty.playerId}") UUID playerId,
                              @NotEmpty(message = "{not.empty.playerNumbers}") Set<Integer> playerNumbers,
-                             @NotEmpty(message = "{not.empty.drawNumbers}") Set<Integer> drawNumbers,
-                             @NotEmpty(message = "{not.empty.drawDate}")
+                             @NotEmpty(message = "{not.empty.randomNumbers}") Set<Integer> randomNumbers,
+                             @NotEmpty(message = "{not.empty.dateTime}")
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                             LocalDateTime drawDate) {
+                             LocalDateTime dateTime) {
 }

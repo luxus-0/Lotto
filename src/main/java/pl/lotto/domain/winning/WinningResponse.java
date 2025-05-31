@@ -15,7 +15,7 @@ public record WinningResponse(@NotBlank(message = "not plank player id") UUID pl
                               @NotBlank(message = "not blank hits") @Min(0) Integer hits,
                               @NotBlank(message = "not blank price") @Min(0) BigDecimal price,
 
-                              @NotBlank(message = "not blank drawDate")
+                              @NotBlank(message = "not blank dateTime")
                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                               LocalDateTime drawDate,
                               @NotEmpty(message = "not empty isWinner") boolean isWinner) {

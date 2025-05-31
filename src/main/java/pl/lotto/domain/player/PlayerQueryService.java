@@ -21,10 +21,31 @@ import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
 @RequiredArgsConstructor
 @Log4j2
 class PlayerQueryService {
+    private final static String PLAYER_NOT_FOUND = "Player not found";
     private final PlayerRepository playerRepository;
     private final ObjectMapper objectMapper;
-    private final static String PLAYER_NOT_FOUND = "Player not found";
 
+    private static PlayerResponse toPlayer(PlayerRequest playerRequest, Player playerSaved) {
+        return PlayerResponse.builder()
+                .id(playerSaved.id())
+                .name(playerRequest.name())
+                .surname(playerRequest.surname())
+                .isCreated(true)
+                .result(REGISTER_SUCCESS.name())
+                .status(playerSaved.status())
+                .build();
+    }
+
+    private static Player getPlayer(PlayerRequest playerRequest) {
+        return Player.builder()
+                .id(UUID.randomUUID())
+                .name(playerRequest.name())
+                .surname(playerRequest.surname())
+                .email(playerRequest.email())
+                .createdAt(LocalDateTime.now())
+                .status(ACTIVE)
+                .build();
+    }
 
     public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
         validatePlayerDoesNotExist(playerRequest);
@@ -51,29 +72,6 @@ class PlayerQueryService {
             throw new PlayerAlreadyExistsException("Player email {} already exists", email);
         }
     }
-
-    private static PlayerResponse toPlayer(PlayerRequest playerRequest, Player playerSaved) {
-        return PlayerResponse.builder()
-                .id(playerSaved.id())
-                .name(playerRequest.name())
-                .surname(playerRequest.surname())
-                .isCreated(true)
-                .result(REGISTER_SUCCESS.name())
-                .status(playerSaved.status())
-                .build();
-    }
-
-    private static Player getPlayer(PlayerRequest playerRequest) {
-        return Player.builder()
-                .id(UUID.randomUUID())
-                .name(playerRequest.name())
-                .surname(playerRequest.surname())
-                .email(playerRequest.email())
-                .createdAt(LocalDateTime.now())
-                .status(ACTIVE)
-                .build();
-    }
-
 
     public PlayerResponse findPlayer(UUID playerId) {
         Player player = playerRepository.findById(playerId)

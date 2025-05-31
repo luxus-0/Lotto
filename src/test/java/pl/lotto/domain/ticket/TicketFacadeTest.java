@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import pl.lotto.domain.ticket.dto.TicketCreatedEvent;
 import pl.lotto.domain.ticket.dto.TicketRequest;
 import pl.lotto.domain.ticket.dto.TicketResponse;
+import pl.lotto.domain.ticket.exceptions.TicketNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

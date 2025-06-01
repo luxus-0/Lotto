@@ -1,14 +1,16 @@
 package pl.lotto.domain.randomnumbers;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-@AllArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class RandomNumbersGeneratorFacade {
-    private final RandomNumbersGeneratorQueryService randomNumbersGeneratorQueryServiceImpl;
+    private final RandomNumbersGeneratorService randomNumbersGeneratorService;
 
-    void generate() {
-        randomNumbersGeneratorQueryServiceImpl.generate();
+    void generateRandomNumbers() {
+        randomNumbersGeneratorService.generate();
     }
 }

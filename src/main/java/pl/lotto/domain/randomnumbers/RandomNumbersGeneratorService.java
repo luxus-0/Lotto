@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsException;
 
@@ -11,10 +12,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.random.RandomGenerator;
 
-@Component
+@Service
 @AllArgsConstructor
 @Log4j2
-public class RandomNumbersGeneratorQueryService {
+public class RandomNumbersGeneratorService {
 
     private final RandomNumbersValidatorConfigurationProperties properties;
     private final RandomNumbersRepository randomNumbersRepository;

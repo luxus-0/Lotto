@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Log4j2
 public class DrawDateTimeFacade {
-    private final DrawDateTimeQueryService drawDateService;
+    private final DrawDateTimeService drawDateService;
 
     public LocalDateTime generate() {
         LocalDateTime drawDate = drawDateService.generateDrawDateTime();

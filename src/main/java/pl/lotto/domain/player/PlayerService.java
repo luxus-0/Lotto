@@ -22,7 +22,7 @@ import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-class PlayerQueryService {
+class PlayerService {
     private final static String PLAYER_NOT_FOUND = "Player not found";
     private final PlayerRepository playerRepository;
     private final ObjectMapper objectMapper;

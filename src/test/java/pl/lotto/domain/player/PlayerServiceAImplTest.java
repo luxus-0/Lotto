@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
 
-class PlayerQueryServiceAImplTest {
+class PlayerServiceAImplTest {
 
     @Mock
     private PlayerRepository playerRepository;
@@ -30,7 +30,7 @@ class PlayerQueryServiceAImplTest {
     private ObjectMapper objectMapper;
 
     @InjectMocks
-    private PlayerQueryService playerService;
+    private PlayerService playerService;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +41,7 @@ class PlayerQueryServiceAImplTest {
     @DisplayName("Should register player successfully")
     void shouldRegisterPlayer() {
         // given
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), 1, 3, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
         PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", statistics);
         Player player = new Player(UUID.randomUUID(), "John", "Doe", "john@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
         when(playerRepository.existsByNameAndSurname("John", "Doe")).thenReturn(false);
@@ -60,7 +60,7 @@ class PlayerQueryServiceAImplTest {
     @Test
     @DisplayName("Should throw exception when player with name and surname exists")
     void shouldThrowWhenNameSurnameExists() {
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), 1, 3, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
         PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", statistics);
         when(playerRepository.existsByNameAndSurname("John", "Doe")).thenReturn(true);
 
@@ -71,7 +71,7 @@ class PlayerQueryServiceAImplTest {
     @Test
     @DisplayName("Should throw exception when player email exists")
     void shouldThrowWhenEmailExists() {
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), 1, 3, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
         PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", statistics);
         when(playerRepository.existsByNameAndSurname("John", "Doe")).thenReturn(false);
         when(playerRepository.existsByEmail("john@example.com")).thenReturn(true);
@@ -139,7 +139,7 @@ class PlayerQueryServiceAImplTest {
     void shouldUpdatePlayer() {
         UUID playerId = UUID.randomUUID();
         Player existing = new Player(playerId, "Tom", "Black", "tom@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), 1, 3, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
+        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
         PlayerRequest updatedRequest = new PlayerRequest(UUID.randomUUID(), "Tommy", "Black", "tommy@example.com", statistics);
         Player updated = new Player(playerId, "Tommy", "Black", "tommy@example.com", existing.createdAt(), PlayerStatus.ACTIVE);
         PlayerResponse expected = PlayerResponse.builder().id(playerId).name("Tommy").build();

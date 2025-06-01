@@ -1,0 +1,15 @@
+POST https://api.random.org/json-rpc/4/invoke
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "generateIntegers",
+  "params": {
+    "apiKey": "4c47d0f1-850d-49cb-9de9-ef098e44d737",
+    "n": 10,
+    "min": 1,
+    "max": 99,
+    "replacement": true
+  },
+  "id": 1
+}

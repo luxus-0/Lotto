@@ -2,7 +2,7 @@ package pl.lotto.domain.winning;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
+import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorService;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.winning.exeptions.NumbersHasTheSameSizeException;
 
@@ -16,7 +16,7 @@ public class WinningService {
 
 
     private final WinningNumbersConfigurationProperties properties;
-    private final RandomNumbersGeneratorQueryService randomNumbersService;
+    private final RandomNumbersGeneratorService randomNumbersService;
 
 
     Integer countHits(Set<Integer> playerNumbers, Set<Integer> winningNumbers) {

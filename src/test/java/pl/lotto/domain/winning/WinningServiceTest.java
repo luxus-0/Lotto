@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorQueryService;
+import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorService;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.winning.exeptions.NumbersHasTheSameSizeException;
 
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class WinningServiceTest {
 
     @Mock
-    private RandomNumbersGeneratorQueryService randomNumbersService;
+    private RandomNumbersGeneratorService randomNumbersService;
     @InjectMocks
     private WinningService winningService;
     @Mock

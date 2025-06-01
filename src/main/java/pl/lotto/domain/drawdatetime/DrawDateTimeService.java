@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 
 @Service
 @Log4j2
-public class DrawDateTimeQueryService {
+public class DrawDateTimeService {
 
     private final Clock clock;
     private final DrawDateTimeCalculator calculator;
 
-    public DrawDateTimeQueryService(DrawDateTimeConfigurationProperties properties, Clock clock) {
+    public DrawDateTimeService(DrawDateTimeConfigurationProperties properties, Clock clock) {
         this.clock = clock;
         this.calculator = new DrawDateTimeCalculator(properties);
     }

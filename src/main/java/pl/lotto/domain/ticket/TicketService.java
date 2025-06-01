@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class TicketQueryService {
+public class TicketService {
 
     private static final String TICKET_NOT_FOUND = "Ticket not found";
     private final TicketRepository ticketRepository;

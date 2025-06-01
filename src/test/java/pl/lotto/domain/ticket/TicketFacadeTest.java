@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-class TicketQueryServiceTest {
+class TicketServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
@@ -35,7 +35,7 @@ class TicketQueryServiceTest {
     private TicketNumbersValidator validator;
 
     @InjectMocks
-    private TicketQueryService ticketQueryService;
+    private TicketService ticketService;
 
     @BeforeEach
     void setUp() {
@@ -62,7 +62,7 @@ class TicketQueryServiceTest {
         when(objectMapper.convertValue(any(), eq(TicketResponse.class))).thenReturn(new TicketResponse(playerId, numbers, drawDate, ticket.status()));
 
         // when
-        TicketResponse response = ticketQueryService.createTicket(request);
+        TicketResponse response = ticketService.createTicket(request);
 
         // then
         assertThat(response).isNotNull();
@@ -76,7 +76,7 @@ class TicketQueryServiceTest {
         TicketRequest request = new TicketRequest(UUID.randomUUID(), Set.of(0, 100), LocalDateTime.now());
 
         // when / then
-        assertThatThrownBy(() -> ticketQueryService.createTicket(request))
+        assertThatThrownBy(() -> ticketService.createTicket(request))
                 .isInstanceOf(TicketNotFoundException.class)
                 .hasMessageContaining("Ticket not found");
 
@@ -98,7 +98,7 @@ class TicketQueryServiceTest {
         when(objectMapper.convertValue(ticket, TicketResponse.class)).thenReturn(new TicketResponse(id, ticket.numbers(), ticket.drawDateTime(), ticket.status()));
 
         // when
-        TicketResponse response = ticketQueryService.getTicketById(id);
+        TicketResponse response = ticketService.getTicketById(id);
 
         // then
         assertThat(response).isNotNull();
@@ -111,7 +111,7 @@ class TicketQueryServiceTest {
         when(ticketRepository.findById(id)).thenReturn(Optional.empty());
 
         // when / then
-        assertThatThrownBy(() -> ticketQueryService.getTicketById(id))
+        assertThatThrownBy(() -> ticketService.getTicketById(id))
                 .isInstanceOf(TicketNotFoundException.class)
                 .hasMessageContaining("not found");
     }
@@ -131,7 +131,7 @@ class TicketQueryServiceTest {
         when(objectMapper.convertValue(any(), eq(TicketResponse.class))).thenReturn(new TicketResponse(ticket.playerId(), ticket.numbers(), ticket.drawDateTime(), ticket.status()));
 
         // when
-        Set<TicketResponse> tickets = ticketQueryService.getTicketsByPlayer(playerId);
+        Set<TicketResponse> tickets = ticketService.getTicketsByPlayer(playerId);
 
         // then
         assertThat(tickets).hasSize(1);
@@ -146,7 +146,7 @@ class TicketQueryServiceTest {
                 .thenReturn(Set.of(ticket));
 
         // when
-        Set<Ticket> result = ticketQueryService.findTicketsForDraw(drawTime);
+        Set<Ticket> result = ticketService.findTicketsForDraw(drawTime);
 
         // then
         assertThat(result).hasSize(1);

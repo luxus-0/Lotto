@@ -2,13 +2,14 @@ package pl.lotto.domain.randomnumbers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsException;
 
 import java.util.Set;
 
 @AllArgsConstructor
-@Component
+@Service
 public class RandomNumbersValidator {
     private final RandomNumbersValidatorConfigurationProperties properties;
 

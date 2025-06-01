@@ -1,13 +1,14 @@
 package pl.lotto.domain.randomnumbers;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import lombok.Builder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "random.numbers")
+@Builder
 public record RandomNumbersValidatorConfigurationProperties(
-        @Min(1) int min,
-        @Max(99) int max,
-        @Min(1) int count
+        int min,
+        int max,
+        int count
 ) {
 }

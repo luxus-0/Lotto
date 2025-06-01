@@ -11,25 +11,25 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PlayerFacade {
-    private final PlayerQueryService playerQueryService;
+    private final PlayerService playerService;
 
     public PlayerResponse register(PlayerRequest player) {
-        return playerQueryService.registerPlayer(player);
+        return playerService.registerPlayer(player);
     }
 
     public PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
-        return playerQueryService.updatePlayer(playerId, playerRequest);
+        return playerService.updatePlayer(playerId, playerRequest);
     }
 
     public PlayerResponse find(UUID playerId) {
-        return playerQueryService.findPlayer(playerId);
+        return playerService.findPlayer(playerId);
     }
 
     public Set<PlayerResponse> findAll() {
-        return playerQueryService.findPlayers();
+        return playerService.findPlayers();
     }
 
     public void delete(UUID playerId) {
-        playerQueryService.removePlayer(playerId);
+        playerService.removePlayer(playerId);
     }
 }

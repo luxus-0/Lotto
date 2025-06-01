@@ -15,21 +15,20 @@ import static org.mockito.Mockito.*;
 
 class PlayerFacadeTest {
 
-    private PlayerQueryService playerQueryService;
+    private PlayerService playerService;
     private PlayerFacade playerFacade;
 
     @BeforeEach
     void setUp() {
-        playerQueryService = mock(PlayerQueryService.class);
-        playerFacade = new PlayerFacade(playerQueryService);
+        playerService = mock(PlayerService.class);
+        playerFacade = new PlayerFacade(playerService);
     }
 
     @Test
     void should_delegate_register_request_to_service() {
         // given
         PlayerStatistics playerStatistics = PlayerStatistics.builder()
-                .win(4)
-                .lose(1)
+                .status(PlayerStatus.ACTIVE)
                 .lastWinAt(LocalDateTime.now())
                 .lastPlayedAt(LocalDateTime.now().minusDays(2))
                 .playerId(UUID.randomUUID())
@@ -44,14 +43,14 @@ class PlayerFacadeTest {
                 .result("REGISTER_SUCCESS")
                 .build();
 
-        when(playerQueryService.registerPlayer(request)).thenReturn(expectedResponse);
+        when(playerService.registerPlayer(request)).thenReturn(expectedResponse);
 
         // when
         PlayerResponse actualResponse = playerFacade.register(request);
 
         // then
         assertThat(actualResponse).isEqualTo(expectedResponse);
-        verify(playerQueryService, times(1)).registerPlayer(request);
+        verify(playerService, times(1)).registerPlayer(request);
     }
 
     @Test
@@ -66,14 +65,14 @@ class PlayerFacadeTest {
                 .result("REGISTER_SUCCESS")
                 .build();
 
-        when(playerQueryService.findPlayer(playerId)).thenReturn(expected);
+        when(playerService.findPlayer(playerId)).thenReturn(expected);
 
         // when
         PlayerResponse actual = playerFacade.find(playerId);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        verify(playerQueryService).findPlayer(playerId);
+        verify(playerService).findPlayer(playerId);
     }
 
     @Test
@@ -82,14 +81,14 @@ class PlayerFacadeTest {
         Set<PlayerResponse> expected = Set.of(
                 new PlayerResponse(UUID.randomUUID(), "Adam", "Nowak", true, "REGISTER_SUCCESS", PlayerStatus.ACTIVE)
         );
-        when(playerQueryService.findPlayers()).thenReturn(expected);
+        when(playerService.findPlayers()).thenReturn(expected);
 
         // when
         Set<PlayerResponse> actual = playerFacade.findAll();
 
         // then
         assertThat(actual).isEqualTo(expected);
-        verify(playerQueryService).findPlayers();
+        verify(playerService).findPlayers();
     }
 
     @Test
@@ -101,7 +100,7 @@ class PlayerFacadeTest {
         playerFacade.delete(playerId);
 
         // then
-        verify(playerQueryService).removePlayer(playerId);
+        verify(playerService).removePlayer(playerId);
     }
 
     @Test
@@ -124,14 +123,14 @@ class PlayerFacadeTest {
                 .status(PlayerStatus.ACTIVE)
                 .build();
 
-        when(playerQueryService.updatePlayer(any(UUID.class), any(PlayerRequest.class)))
+        when(playerService.updatePlayer(any(UUID.class), any(PlayerRequest.class)))
                 .thenReturn(expectedResponse);
 
         // WHEN
         PlayerResponse actualResponse = playerFacade.updatePlayer(playerId, playerRequest);
 
         // THEN
-        verify(playerQueryService, times(1)).updatePlayer(playerId, playerRequest);
+        verify(playerService, times(1)).updatePlayer(playerId, playerRequest);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
 

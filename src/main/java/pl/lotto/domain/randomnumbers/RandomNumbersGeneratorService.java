@@ -12,9 +12,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.random.RandomGenerator;
 
-@Service
 @AllArgsConstructor
 @Log4j2
+@Service
 public class RandomNumbersGeneratorService {
 
     private final RandomNumbersValidatorConfigurationProperties properties;
@@ -33,8 +33,8 @@ public class RandomNumbersGeneratorService {
     }
 
     public Set<Integer> generateUniqueNumbers() {
-        int min = properties.min();
-        int max = properties.max();
+        int min = Integer.parseInt(String.valueOf(properties.min()));
+        int max = Integer.parseInt(String.valueOf(properties.max()));
         int count = properties.count();
 
         if (count > (max - min + 1)) {

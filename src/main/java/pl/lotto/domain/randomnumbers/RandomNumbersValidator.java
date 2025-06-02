@@ -9,7 +9,7 @@ import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsExceptio
 import java.util.Set;
 
 @AllArgsConstructor
-@Service
+@Component
 public class RandomNumbersValidator {
     private final RandomNumbersValidatorConfigurationProperties properties;
 

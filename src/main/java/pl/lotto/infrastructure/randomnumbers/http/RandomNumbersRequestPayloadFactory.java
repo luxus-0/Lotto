@@ -1,8 +1,6 @@
 package pl.lotto.infrastructure.randomnumbers.http;
 
-import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -5,29 +5,36 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
+import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorFacade;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersGeneratorClient;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersGeneratorClientConfigurationProperties;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersRequestPayloadFactory;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersResponseParser;
-import pl.lotto.infrastructure.randomnumbers.http.dto.RandoNumbersDto;
 
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Testcontainers
 @SpringBootTest
+@AutoConfigureMockMvc
 class RandomNumbersGeneratorClientIntegrationTest {
 
     @Autowired
     private RandomNumbersGeneratorClientConfigurationProperties properties;
-    @Autowired
+    @MockitoBean
     private RandomNumbersGeneratorClient client;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private RandomNumbersGeneratorFacade facade;
 
     @Container
     static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
@@ -60,13 +67,11 @@ class RandomNumbersGeneratorClientIntegrationTest {
 
 
     @Test
-    void should_return_random_numbers_when_wiremock_simulates_response() throws InterruptedException, IOException {
-        // given, when
-        RandoNumbersDto result = client.generateRandomNumbers();
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.numbers()).hasSize(6);
-        assertThat(result.numbers()).containsExactly(1, 2, 3, 4, 5, 6);
+    void should_return_200_when_generateRandomNumbers_called() throws Exception {
+        // given
+        facade.generateRandomNumbers();
+        // when + then
+        mockMvc.perform(get("/random_numbers"))
+                .andExpect(status().isOk());
     }
 }

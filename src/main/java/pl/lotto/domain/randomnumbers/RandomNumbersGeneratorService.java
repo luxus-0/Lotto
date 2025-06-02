@@ -33,9 +33,9 @@ public class RandomNumbersGeneratorService {
     }
 
     public Set<Integer> generateUniqueNumbers() {
-        int min = Integer.parseInt(String.valueOf(properties.min()));
-        int max = Integer.parseInt(String.valueOf(properties.max()));
-        int count = properties.count();
+        int min = Integer.parseInt(String.valueOf(properties.getMin()));
+        int max = Integer.parseInt(String.valueOf(properties.getMax()));
+        int count = properties.getCount();
 
         if (count > (max - min + 1)) {
             throw new RandomNumbersOutOfBoundsException("Random numbers out of bounds");

@@ -2,7 +2,6 @@ package pl.lotto.domain.randomnumbers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsException;
 
@@ -26,8 +25,8 @@ public class RandomNumbersValidator {
     }
 
     private void validateRange(Set<Integer> numbers) {
-        int min = properties.min();
-        int max = properties.max();
+        int min = properties.getMin();
+        int max = properties.getMax();
 
         if (min > max) {
             throw new IllegalStateException("Min number is greater than max number");

@@ -40,9 +40,9 @@ class RandomNumbersGeneratorServiceTest {
     @Test
     void shouldGenerateCorrectAmountOfUniqueNumbersInRange() {
         // given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(49);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(49);
+        when(properties.getCount()).thenReturn(6);
 
         // when
         Set<Integer> result = randomNumbersService.generateUniqueNumbers();
@@ -55,9 +55,9 @@ class RandomNumbersGeneratorServiceTest {
     @Test
     void shouldThrowExceptionWhenCountExceedsRange() {
         // given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(5);
-        when(properties.count()).thenReturn(10);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(5);
+        when(properties.getCount()).thenReturn(10);
 
         // expect
         assertThrows(RandomNumbersOutOfBoundsException.class, () -> randomNumbersService.generateUniqueNumbers());
@@ -67,9 +67,9 @@ class RandomNumbersGeneratorServiceTest {
     void shouldSaveNumbersWhenValidationPasses() {
         // given
         Set<Integer> numbers = Set.of(1, 2, 3, 4, 5, 6);
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(49);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(49);
+        when(properties.getCount()).thenReturn(6);
         when(validator.validate(Mockito.anySet())).thenReturn(true);
         when(randomNumbersRepository.save(Mockito.anySet())).thenReturn(numbers);
 
@@ -82,9 +82,9 @@ class RandomNumbersGeneratorServiceTest {
     @Test
     void shouldThrowExceptionWhenValidationFails() {
         // given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(49);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(49);
+        when(properties.getCount()).thenReturn(6);
         when(validator.validate(Mockito.anySet())).thenReturn(false);
 
         // when && then
@@ -95,9 +95,9 @@ class RandomNumbersGeneratorServiceTest {
     @DisplayName("should generate a set of unique numbers within the specified range")
     void shouldGenerateUniqueNumbersWithinRange() {
         // Given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(99);
-        when(properties.count()).thenReturn(7);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(99);
+        when(properties.getCount()).thenReturn(7);
 
         // When
         Set<Integer> uniqueNumbers = randomNumbersService.generateUniqueNumbers();
@@ -113,9 +113,9 @@ class RandomNumbersGeneratorServiceTest {
     @DisplayName("should throw RandomNumbersOutOfBoundsException when count is greater than range")
     void shouldThrowRandomNumbersOutOfBoundsExceptionWhenCountIsGreaterThanRange() {
         // Given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(5);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(5);
+        when(properties.getCount()).thenReturn(6);
 
         // When & Then
         assertThatThrownBy(() -> randomNumbersService.generateUniqueNumbers())
@@ -127,9 +127,9 @@ class RandomNumbersGeneratorServiceTest {
     @DisplayName("should successfully generate and save random numbers when valid")
     void shouldGenerateAndSaveRandomNumbersWhenValid() {
         // Given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(6);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(6);
+        when(properties.getCount()).thenReturn(6);
         when(validator.validate(anySet())).thenReturn(true);
         when(randomNumbersRepository.save(anySet())).thenReturn(new LinkedHashSet<>(Set.of(1, 2, 3, 4, 5, 6)));
 
@@ -145,9 +145,9 @@ class RandomNumbersGeneratorServiceTest {
     @DisplayName("should throw RandomNumbersNotFoundException when generated numbers are invalid")
     void shouldThrowRandomNumbersNotFoundExceptionWhenInvalid() {
         // Given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(6);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(6);
+        when(properties.getCount()).thenReturn(6);
 
         when(validator.validate(anySet())).thenReturn(false);
 
@@ -164,9 +164,9 @@ class RandomNumbersGeneratorServiceTest {
     @DisplayName("should ensure uniqueness of generated numbers for a small range")
     void shouldEnsureUniquenessForSmallRange() {
         // Given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(6);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(6);
+        when(properties.getCount()).thenReturn(6);
 
         // When
         Set<Integer> uniqueNumbers = randomNumbersService.generateUniqueNumbers();
@@ -182,9 +182,9 @@ class RandomNumbersGeneratorServiceTest {
     @DisplayName("should ensure different numbers are generated on subsequent calls (due to randomness)")
     void shouldEnsureDifferentNumbersOnSubsequentCalls() {
         // Given
-        when(properties.min()).thenReturn(1);
-        when(properties.max()).thenReturn(99);
-        when(properties.count()).thenReturn(6);
+        when(properties.getMin()).thenReturn(1);
+        when(properties.getMax()).thenReturn(99);
+        when(properties.getCount()).thenReturn(6);
 
         // When
         Set<Integer> numbers1 = randomNumbersService.generateUniqueNumbers();

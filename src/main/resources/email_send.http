@@ -1,0 +1,3 @@
+### Send email notification
+POST http://localhost:8080/api/emails/send
+Content-Type: application/json

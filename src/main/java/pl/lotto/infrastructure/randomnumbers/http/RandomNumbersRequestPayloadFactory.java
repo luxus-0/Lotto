@@ -8,8 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 @AllArgsConstructor
 public class RandomNumbersRequestPayloadFactory {
-
-
+    
     public String generate() throws IOException {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("random_numbers.json")) {
             if (is == null) {

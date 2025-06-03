@@ -13,7 +13,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/api/emails")
 public class EmailController {
 
-    private final EmailNotificationSender emailSender;
+    private final EmailNotificationSenderImpl emailSender;
 
     @PostMapping("/send")
     public ResponseEntity<Object> send(){

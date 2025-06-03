@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Document(collection = "notifications")
 @Builder
-public class Notification {
+public class EmailNotification {
     @Id
     private UUID id;;
     private String recipient;

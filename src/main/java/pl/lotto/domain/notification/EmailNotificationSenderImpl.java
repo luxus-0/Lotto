@@ -10,6 +10,7 @@ import com.sendgrid.helpers.mail.objects.Email;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import pl.lotto.domain.notification.vo.EmailRequest;
 
 import java.io.IOException;
 

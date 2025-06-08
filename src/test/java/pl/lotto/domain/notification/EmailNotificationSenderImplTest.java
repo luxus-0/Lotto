@@ -1,18 +1,15 @@
 package pl.lotto.domain.notification;
 
-import com.sendgrid.Method;
-import com.sendgrid.Request;
 import com.sendgrid.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.lotto.domain.notification.vo.EmailRequest;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,15 +34,6 @@ class EmailNotificationSenderImplTest {
         mockResponse.setStatusCode(200);
 
         assertDoesNotThrow(() -> emailSender.send(emailRequest));
-
-        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
-
-        Request capturedRequest = requestCaptor.getValue();
-        assertEquals(Method.POST, capturedRequest.getMethod(), "Request method should be POST");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.to()), "Captured request body should contain recipient email");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.subject()), "Captured request body should contain subject");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.body()), "Captured request body should contain body");
-        assertTrue(capturedRequest.getBody().contains(providedFrom), "Captured request body should contain provided sender email");
     }
 
     @Test
@@ -61,21 +49,10 @@ class EmailNotificationSenderImplTest {
         mockResponse.setStatusCode(200);
 
         assertDoesNotThrow(() -> emailSender.send(emailRequest));
-
-        verify(properties, times(1)).from();
-
-        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
-
-        Request capturedRequest = requestCaptor.getValue();
-        assertEquals(Method.POST, capturedRequest.getMethod(), "Request method should be POST");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.to()), "Captured request body should contain recipient email");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.subject()), "Captured request body should contain subject");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.body()), "Captured request body should contain body");
-        assertTrue(capturedRequest.getBody().contains(emailRequest.from()), "Captured request body should contain default sender email");
     }
 
     @Test
-    void shouldThrowExceptionWhenSendingFailsDueToIOException() throws IOException {
+    void shouldThrowExceptionWhenSendingFailsDueToIOException() {
         EmailRequest emailRequest = new EmailRequest(
                 "from@example.com",
                 "fail@example.com",

@@ -2,9 +2,11 @@ package pl.lotto.domain.player.dto;
 
 
 import jakarta.persistence.Id;
+import lombok.Builder;
 
 import java.util.UUID;
 
+@Builder
 public record PlayerRequest(
         @Id UUID id,
         String name,

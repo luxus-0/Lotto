@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
+import pl.lotto.domain.player.dto.PlayerStatistics;
 import pl.lotto.domain.player.exceptions.PlayerAlreadyExistsException;
 import pl.lotto.domain.player.exceptions.PlayerNotFoundException;
 
@@ -37,14 +38,12 @@ class PlayerServiceAImplTest {
     }
 
     @Test
-    @DisplayName("Should register player successfully")
+    @DisplayName("Should register player successfully when player not exists")
     void shouldRegisterPlayer() {
         // given
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
-        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", statistics);
+        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "john@example.com");
         Player player = new Player(UUID.randomUUID(), "John", "Doe", "john@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
-        when(playerRepository.existsByNameAndSurname("John", "Doe")).thenReturn(false);
-        when(playerRepository.existsByEmail("john@example.com")).thenReturn(false);
+        when(playerRepository.existsPlayerById(request.id())).thenReturn(false);
         when(playerRepository.save(any())).thenReturn(player);
 
         // when
@@ -53,30 +52,36 @@ class PlayerServiceAImplTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.name()).isEqualTo("John");
-        assertThat(response.result()).isEqualTo("REGISTER_SUCCESS");
+        assertThat(response.status()).isEqualTo(PlayerStatus.ACTIVE);
+        assertThat(response.isCreated()).isTrue();
     }
 
     @Test
-    @DisplayName("Should throw exception when player with name and surname exists")
-    void shouldThrowWhenNameSurnameExists() {
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
-        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", statistics);
-        when(playerRepository.existsByNameAndSurname("John", "Doe")).thenReturn(true);
+    @DisplayName("Should player status active and is created true when player exists")
+    void shouldPlayerStatusActiveAndIsCreatedTrue() {
+        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "john@example.com");
+        when(playerRepository.existsPlayerById(request.id())).thenReturn(false);
+        Player player = new Player(UUID.randomUUID(), "John", "Doe", "john@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
+        when(playerRepository.save(any())).thenReturn(player);
 
-        assertThatThrownBy(() -> playerService.registerPlayer(request))
-                .isInstanceOf(PlayerAlreadyExistsException.class);
+        PlayerResponse response = playerService.registerPlayer(request);
+        assertThat(response).isNotNull();
+        assertThat(response.name()).isEqualTo("John");
+        assertThat(response.status()).isEqualTo(PlayerStatus.ACTIVE);
+        assertThat(response.isCreated()).isTrue();
     }
 
     @Test
-    @DisplayName("Should throw exception when player email exists")
-    void shouldThrowWhenEmailExists() {
-        PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
-        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", statistics);
-        when(playerRepository.existsByNameAndSurname("John", "Doe")).thenReturn(false);
-        when(playerRepository.existsByEmail("john@example.com")).thenReturn(true);
+    @DisplayName("Should player status inactive and is created false when player exists")
+    void shouldPlayerStatusInactiveAndIsCreatedFalse() {
+        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "john@example.com");
+        when(playerRepository.existsPlayerById(request.id())).thenReturn(true);
 
-        assertThatThrownBy(() -> playerService.registerPlayer(request))
-                .isInstanceOf(PlayerAlreadyExistsException.class);
+        PlayerResponse response = playerService.registerPlayer(request);
+        assertThat(response).isNotNull();
+        assertThat(response.name()).isEqualTo("John");
+        assertThat(response.status()).isEqualTo(PlayerStatus.INACTIVE);
+        assertThat(response.isCreated()).isFalse();
     }
 
     @Test
@@ -85,12 +90,9 @@ class PlayerServiceAImplTest {
         UUID playerId = UUID.randomUUID();
         Player player = new Player(playerId, "Jane", "Smith", "jane@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
         PlayerResponse expectedResponse = PlayerResponse.builder()
-                .id(playerId)
                 .name("Jane")
-                .surname("Smith")
                 .status(PlayerStatus.ACTIVE)
                 .isCreated(true)
-                .result(REGISTER_SUCCESS.name())
                 .build();
 
         when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
@@ -115,7 +117,11 @@ class PlayerServiceAImplTest {
     @DisplayName("Should return all players")
     void shouldFindAllPlayers() {
         Player player = new Player(UUID.randomUUID(), "Anna", "Nowak", "anna@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
-        PlayerResponse response = PlayerResponse.builder().id(player.id()).name("Anna").surname("Nowak").build();
+        PlayerResponse response = PlayerResponse.builder()
+                .name("Anna").status(PlayerStatus.ACTIVE)
+                .isCreated(true)
+                .build();
+
         when(playerRepository.findAll()).thenReturn(List.of(player));
         when(objectMapper.convertValue(player, PlayerResponse.class)).thenReturn(response);
 
@@ -139,15 +145,19 @@ class PlayerServiceAImplTest {
         UUID playerId = UUID.randomUUID();
         Player existing = new Player(playerId, "Tom", "Black", "tom@example.com", LocalDateTime.now(), PlayerStatus.ACTIVE);
         PlayerStatistics statistics = new PlayerStatistics(UUID.randomUUID(), PlayerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now().plusDays(2));
-        PlayerRequest updatedRequest = new PlayerRequest(UUID.randomUUID(), "Tommy", "Black", "tommy@example.com", statistics);
+        PlayerRequest updatedRequest = new PlayerRequest(UUID.randomUUID(), "Tommy", "tommy@example.com");
         Player updated = new Player(playerId, "Tommy", "Black", "tommy@example.com", existing.createdAt(), PlayerStatus.ACTIVE);
-        PlayerResponse expected = PlayerResponse.builder().id(playerId).name("Tommy").build();
+        PlayerResponse expected = PlayerResponse.builder()
+                .name("Tommy")
+                .isCreated(true)
+                .status(PlayerStatus.ACTIVE)
+                .build();
 
         when(playerRepository.findById(playerId)).thenReturn(Optional.of(existing));
         when(playerRepository.save(any())).thenReturn(updated);
         when(objectMapper.convertValue(updated, PlayerResponse.class)).thenReturn(expected);
 
-        PlayerResponse result = playerService.updatePlayer(playerId, updatedRequest);
+        PlayerResponse result = playerService.updatePlayer(playerId);
 
         assertThat(result.name()).isEqualTo("Tommy");
     }

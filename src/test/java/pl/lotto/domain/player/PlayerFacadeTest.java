@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
+import pl.lotto.domain.player.dto.PlayerStatistics;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -33,13 +34,16 @@ class PlayerFacadeTest {
                 .playerId(UUID.randomUUID())
                 .build();
 
-        PlayerRequest request = new PlayerRequest(UUID.randomUUID(), "John", "Doe", "john@example.com", playerStatistics);
-        PlayerResponse expectedResponse = PlayerResponse.builder()
+        PlayerRequest request = PlayerRequest.builder()
                 .id(UUID.randomUUID())
+                .name("Player 1")
+                .email("lux@o2.pl")
+                .build();
+
+        PlayerResponse expectedResponse = PlayerResponse.builder()
                 .name("John")
-                .surname("Doe")
                 .isCreated(true)
-                .result("REGISTER_SUCCESS")
+                .status(PlayerStatus.ACTIVE)
                 .build();
 
         when(playerService.registerPlayer(request)).thenReturn(expectedResponse);
@@ -57,11 +61,9 @@ class PlayerFacadeTest {
         // given
         UUID playerId = UUID.randomUUID();
         PlayerResponse expected = PlayerResponse.builder()
-                .id(playerId)
                 .name("Jane")
-                .surname("Doe")
                 .isCreated(true)
-                .result("REGISTER_SUCCESS")
+                .status(PlayerStatus.ACTIVE)
                 .build();
 
         when(playerService.findPlayer(playerId)).thenReturn(expected);
@@ -78,7 +80,11 @@ class PlayerFacadeTest {
     void should_delegate_findAll_to_service() {
         // given
         Set<PlayerResponse> expected = Set.of(
-                new PlayerResponse(UUID.randomUUID(), "Adam", "Nowak", true, "REGISTER_SUCCESS", PlayerStatus.ACTIVE)
+                PlayerResponse.builder()
+                        .name("Andrej")
+                        .status(PlayerStatus.ACTIVE)
+                        .isCreated(true)
+                        .build()
         );
         when(playerService.findPlayers()).thenReturn(expected);
 
@@ -109,35 +115,28 @@ class PlayerFacadeTest {
 
         PlayerRequest playerRequest = PlayerRequest.builder()
                 .name("UpdatedName")
-                .surname("UpdatedSurname")
                 .email("updated.email@example.com")
                 .build();
 
         PlayerResponse expectedResponse = PlayerResponse.builder()
-                .id(playerId)
                 .name("UpdatedName")
-                .surname("UpdatedSurname")
                 .isCreated(false)
-                .result("UPDATE_SUCCESS")
                 .status(PlayerStatus.ACTIVE)
                 .build();
 
-        when(playerService.updatePlayer(any(UUID.class), any(PlayerRequest.class)))
+        when(playerService.updatePlayer(any(UUID.class)))
                 .thenReturn(expectedResponse);
 
         // WHEN
-        PlayerResponse actualResponse = playerFacade.updatePlayer(playerId, playerRequest);
+        PlayerResponse actualResponse = playerFacade.updatePlayer(playerId);
 
         // THEN
-        verify(playerService, times(1)).updatePlayer(playerId, playerRequest);
+        verify(playerService, times(1)).updatePlayer(playerId);
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
 
 
-        assertThat(actualResponse.id()).isEqualTo(playerId);
         assertThat(actualResponse.name()).isEqualTo("UpdatedName");
-        assertThat(actualResponse.surname()).isEqualTo("UpdatedSurname");
         assertThat(actualResponse.status()).isEqualTo(PlayerStatus.ACTIVE);
-        assertThat(actualResponse.result()).isEqualTo("UPDATE_SUCCESS");
     }
 }

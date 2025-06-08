@@ -30,9 +30,9 @@ class PlayerService {
     private final ObjectMapper objectMapper;
 
     public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
-        boolean existPlayer = playerRepository.findById(playerRequest.id()).stream()
-                .findAny().isPresent();
-        if (existPlayer) {
+        boolean existPlayerById = playerRepository.existsPlayerById(playerRequest.id());
+        boolean existPlayerByEmail = playerRepository.existsPlayerByEmail(playerRequest.email());
+        if (!existPlayerById && !existPlayerByEmail) {
             Player player = Player.builder()
                     .id(UUID.randomUUID())
                     .name(playerRequest.name())

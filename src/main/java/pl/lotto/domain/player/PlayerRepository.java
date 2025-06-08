@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface PlayerRepository extends MongoRepository<Player, UUID> {
     boolean existsPlayerById(UUID id);
+
+    boolean existsPlayerByEmail(String email);
 }

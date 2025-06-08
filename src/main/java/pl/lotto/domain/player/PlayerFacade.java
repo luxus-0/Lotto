@@ -17,8 +17,8 @@ public class PlayerFacade {
         return playerService.registerPlayer(player);
     }
 
-    public PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
-        return playerService.updatePlayer(playerId, playerRequest);
+    public PlayerResponse updatePlayer(UUID playerId) {
+        return playerService.updatePlayer(playerId);
     }
 
     public PlayerResponse find(UUID playerId) {

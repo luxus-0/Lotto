@@ -15,8 +15,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDateTime.now;
 import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
 import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
+import static pl.lotto.domain.player.PlayerStatus.INACTIVE;
 
 
 @Service
@@ -27,52 +29,31 @@ class PlayerService {
     private final PlayerRepository playerRepository;
     private final ObjectMapper objectMapper;
 
-    private static PlayerResponse toPlayer(PlayerRequest playerRequest, Player playerSaved) {
-        return PlayerResponse.builder()
-                .id(playerSaved.id())
-                .name(playerRequest.name())
-                .surname(playerRequest.surname())
-                .isCreated(true)
-                .result(REGISTER_SUCCESS.name())
-                .status(playerSaved.status())
-                .build();
-    }
-
-    private static Player getPlayer(PlayerRequest playerRequest) {
-        return Player.builder()
-                .id(UUID.randomUUID())
-                .name(playerRequest.name())
-                .surname(playerRequest.surname())
-                .email(playerRequest.email())
-                .createdAt(LocalDateTime.now())
-                .status(ACTIVE)
-                .build();
-    }
-
     public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
-        validatePlayerDoesNotExist(playerRequest);
-        Player player = getPlayer(playerRequest);
-        Player playerSaved = playerRepository.save(player);
-        log.info("Player saved: {}", playerSaved);
+        boolean existPlayer = playerRepository.findById(playerRequest.id()).stream()
+                .findAny().isPresent();
+        if (existPlayer) {
+            Player player = Player.builder()
+                    .id(UUID.randomUUID())
+                    .name(playerRequest.name())
+                    .email(playerRequest.email())
+                    .status(ACTIVE)
+                    .createdAt(now())
+                    .build();
 
+            Player playerSaved = playerRepository.save(player);
 
-        return toPlayer(playerRequest, playerSaved);
-    }
-
-    private void validatePlayerDoesNotExist(PlayerRequest playerRequest) {
-        String name = playerRequest.name();
-        String surname = playerRequest.surname();
-        String email = playerRequest.email();
-        checkExistingPlayer(playerRequest, name, surname, email);
-    }
-
-    private void checkExistingPlayer(PlayerRequest playerRequest, String name, String surname, String email) {
-        if (playerRepository.existsByNameAndSurname(name, surname)) {
-            throw new PlayerAlreadyExistsException("Player {} {} already exists", name, surname);
+            return PlayerResponse.builder()
+                    .name(playerSaved.name())
+                    .status(playerSaved.status())
+                    .isCreated(true)
+                    .build();
         }
-        if (playerRepository.existsByEmail(playerRequest.email())) {
-            throw new PlayerAlreadyExistsException("Player email {} already exists", email);
-        }
+        return PlayerResponse.builder()
+                .isCreated(false)
+                .status(INACTIVE)
+                .name(playerRequest.name())
+                .build();
     }
 
     public PlayerResponse findPlayer(UUID playerId) {
@@ -85,25 +66,24 @@ class PlayerService {
 
     public Set<PlayerResponse> findPlayers() {
         List<Player> players = playerRepository.findAll();
-        if (players.isEmpty()) {
-            throw new PlayerNotFoundException(PLAYER_NOT_FOUND);
-        }
-        return players.stream().map(pl -> objectMapper.convertValue(pl, PlayerResponse.class))
+        players.stream().findAny().orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
+        return players.stream()
+                .map(player -> objectMapper.convertValue(player, PlayerResponse.class))
                 .collect(Collectors.toSet());
     }
 
-    public PlayerResponse updatePlayer(UUID playerId, PlayerRequest playerRequest) {
-        Player existingPlayer = playerRepository.findById(playerId)
+    public PlayerResponse updatePlayer(UUID playerId) {
+        Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));
 
-        Player updatedPlayer = new Player(
-                existingPlayer.id(),
-                playerRequest.name(),
-                playerRequest.surname(),
-                playerRequest.email(),
-                existingPlayer.createdAt(),
-                existingPlayer.status()
-        );
+        Player updatedPlayer = Player.builder()
+                .id(playerId)
+                .name(player.name())
+                .surname(player.surname())
+                .email(player.email())
+                .status(player.status())
+                .createdAt(player.createdAt())
+                .build();
 
         Player savedPlayer = playerRepository.save(updatedPlayer);
         log.info("Player with id {} updated: {}", playerId, savedPlayer);

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
-import pl.lotto.domain.player.dto.PlayerStatistics;
 
 import java.time.LocalDateTime;
 import java.util.Set;

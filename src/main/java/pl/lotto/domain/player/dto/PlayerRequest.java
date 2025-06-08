@@ -1,19 +1,26 @@
 package pl.lotto.domain.player.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import lombok.Builder;
+
+import jakarta.persistence.Id;
 
 import java.util.UUID;
 
-import static pl.lotto.domain.player.PlayerConstantValidation.*;
-
-@Builder
 public record PlayerRequest(
-        @NotNull(message = "not null player id") UUID id,
-        @NotNull(message = "not null name") @Pattern(regexp = NAME_REGEX, message = NAME_REGEX_MESSAGE) String name,
-        @NotNull(message = "not null surname") @Pattern(regexp = SURNAME_REGEX, message = SURNAME_REGEX_MESSAGE) String surname,
-        @NotNull(message = "not null email") @Email String email,
-        PlayerStatistics playerStatistics) {
+        @Id UUID id,
+        String name,
+        String email) {
+
+    public static final String EMAIL_REGEX= "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+    public PlayerRequest {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Player name is required");
+        }
+        if(email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Player email is required");
+        }
+        if(!email.matches(EMAIL_REGEX)){
+            throw new IllegalArgumentException("Player email is not valid");
+        }
+    }
 }

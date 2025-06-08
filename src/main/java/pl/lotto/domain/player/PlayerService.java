@@ -33,26 +33,37 @@ class PlayerService {
         boolean existPlayerById = playerRepository.existsPlayerById(playerRequest.id());
         boolean existPlayerByEmail = playerRepository.existsPlayerByEmail(playerRequest.email());
         if (!existPlayerById && !existPlayerByEmail) {
-            Player player = Player.builder()
-                    .id(UUID.randomUUID())
-                    .name(playerRequest.name())
-                    .email(playerRequest.email())
-                    .status(ACTIVE)
-                    .createdAt(now())
-                    .build();
-
+            Player player = getPlayerStatusActive(playerRequest);
             Player playerSaved = playerRepository.save(player);
 
-            return PlayerResponse.builder()
-                    .name(playerSaved.name())
-                    .status(playerSaved.status())
-                    .isCreated(true)
-                    .build();
+            return getPlayer(playerSaved);
         }
+        return getPlayerStatusInactive(playerRequest);
+    }
+
+    private static PlayerResponse getPlayerStatusInactive(PlayerRequest playerRequest) {
         return PlayerResponse.builder()
                 .isCreated(false)
                 .status(INACTIVE)
                 .name(playerRequest.name())
+                .build();
+    }
+
+    private static PlayerResponse getPlayer(Player playerSaved) {
+        return PlayerResponse.builder()
+                .name(playerSaved.name())
+                .status(playerSaved.status())
+                .isCreated(true)
+                .build();
+    }
+
+    private static Player getPlayerStatusActive(PlayerRequest playerRequest) {
+        return Player.builder()
+                .id(UUID.randomUUID())
+                .name(playerRequest.name())
+                .email(playerRequest.email())
+                .status(ACTIVE)
+                .createdAt(now())
                 .build();
     }
 

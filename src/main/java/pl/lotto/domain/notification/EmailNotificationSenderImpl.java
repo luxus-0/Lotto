@@ -20,6 +20,7 @@ import java.io.IOException;
 public class EmailNotificationSenderImpl implements EmailNotificationSender {
 
     private final EmailConfigurationProperties properties;
+    private final SendGrid sendGrid;
 
     @Override
     public void send() {
@@ -29,7 +30,6 @@ public class EmailNotificationSenderImpl implements EmailNotificationSender {
         Content content = new Content("text/plain", properties.message());
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sendGrid = new SendGrid(properties.apiKey());
         Request request = new Request();
 
         try {
@@ -39,10 +39,15 @@ public class EmailNotificationSenderImpl implements EmailNotificationSender {
 
             Response response = sendGrid.api(request);
 
-            if (response.getStatusCode() != 200) {
+            // Modified: Check for 2xx status codes (200-299) for success,
+            // as SendGrid often returns 202 Accepted.
+            if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
                 throw new RuntimeException("Error sending email");
             }
+
+            log.info("Email sent success to {}", properties.to());
         } catch (IOException ex) {
+            log.error("Failed to send email", ex);
             throw new RuntimeException("Failed to send email", ex);
         }
     }
@@ -51,24 +56,25 @@ public class EmailNotificationSenderImpl implements EmailNotificationSender {
     public void send(EmailRequest emailRequest) {
         Email from = new Email(emailRequest.from());
         Email to = new Email(emailRequest.to());
-        String subject = emailRequest.subject();
         Content content = new Content("text/plain", emailRequest.body());
-        Mail mail = new Mail(from, subject, to, content);
+        Mail mail = new Mail(from, emailRequest.subject(), to, content);
 
-        SendGrid sendGrid = new SendGrid(properties.apiKey());
         Request request = new Request();
-
         try {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
             Response response = sendGrid.api(request);
+            int statusCode = response.getStatusCode();
 
-            if (response.getStatusCode() != 200) {
-                throw new RuntimeException("Email could not be sent");
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new RuntimeException("Email could not be sent, status code: " + statusCode + ", body: " + response.getBody());
             }
+
+            log.info("Email sent successfully to {}", emailRequest.to());
         } catch (IOException e) {
+            log.error("Error sending email to {}", emailRequest.to(), e);
             throw new RuntimeException("Error sending email", e);
         }
     }

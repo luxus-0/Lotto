@@ -1,5 +1,10 @@
 package pl.lotto.domain.notification.vo;
 
+import pl.lotto.domain.notification.exceptions.BodyEmailNotFoundException;
+import pl.lotto.domain.notification.exceptions.FromEmailNotFoundException;
+import pl.lotto.domain.notification.exceptions.SubjectEmailNotFoundException;
+import pl.lotto.domain.notification.exceptions.ToEmailNotFoundException;
+
 public record EmailRequest(String from,
                            String to,
                            String subject,
@@ -7,16 +12,16 @@ public record EmailRequest(String from,
 
     public EmailRequest {
         if (from == null || from.isBlank()) {
-            throw new IllegalArgumentException("From email is required");
+            throw new FromEmailNotFoundException("From email is required");
         }
         if (to == null || to.isBlank()) {
-            throw new IllegalArgumentException("To email is required");
+            throw new ToEmailNotFoundException("To email is required");
         }
         if (subject == null || subject.isBlank()) {
-            throw new IllegalArgumentException("Subject is required");
+            throw new SubjectEmailNotFoundException("Subject is required");
         }
         if (body == null || body.isBlank()) {
-            throw new IllegalArgumentException("Body is required");
+            throw new BodyEmailNotFoundException("Body is required");
         }
     }
 }

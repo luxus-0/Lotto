@@ -10,7 +10,6 @@ import org.mockito.MockitoAnnotations;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
 import pl.lotto.domain.player.dto.PlayerStatistics;
-import pl.lotto.domain.player.exceptions.PlayerAlreadyExistsException;
 import pl.lotto.domain.player.exceptions.PlayerNotFoundException;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,6 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
-import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
 
 class PlayerServiceAImplTest {
 

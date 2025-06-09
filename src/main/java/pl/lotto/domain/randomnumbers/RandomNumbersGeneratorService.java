@@ -3,7 +3,6 @@ package pl.lotto.domain.randomnumbers;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersNotFoundException;
 import pl.lotto.domain.randomnumbers.exceptions.RandomNumbersOutOfBoundsException;

@@ -6,9 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import pl.lotto.domain.player.PlayerStatus;
 
-import java.util.UUID;
-
-import static pl.lotto.domain.player.PlayerConstantValidation.*;
+import static pl.lotto.domain.player.PlayerConstantValidation.NAME_REGEX;
+import static pl.lotto.domain.player.PlayerConstantValidation.NAME_REGEX_MESSAGE;
 
 @Builder
 public record PlayerResponse(

@@ -27,6 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class RandomNumbersGeneratorClientIntegrationTest {
 
+    @Container
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
+            .withExposedPorts(27017);
+    @Container
+    static WireMockContainer wiremock = new WireMockContainer("wiremock/wiremock:3.3.1");
     @Autowired
     private RandomNumbersGeneratorClientConfigurationProperties properties;
     @MockitoBean
@@ -36,12 +41,10 @@ class RandomNumbersGeneratorClientIntegrationTest {
     @Autowired
     private RandomNumbersGeneratorFacade facade;
 
-    @Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0")
-            .withExposedPorts(27017);
-
-    @Container
-    static WireMockContainer wiremock = new WireMockContainer("wiremock/wiremock:3.3.1");
+    @BeforeAll
+    static void setupMongo() {
+        System.setProperty("spring.data.mongodb.uri", mongoDBContainer.getReplicaSetUrl());
+    }
 
     @BeforeEach
     public void setUp() {
@@ -58,13 +61,6 @@ class RandomNumbersGeneratorClientIntegrationTest {
                 new RandomNumbersRequestPayloadFactory()
         );
     }
-
-    @BeforeAll
-    static void setupMongo() {
-        System.setProperty("spring.data.mongodb.uri", mongoDBContainer.getReplicaSetUrl());
-    }
-
-
 
     @Test
     void should_return_200_when_generateRandomNumbers_called() throws Exception {

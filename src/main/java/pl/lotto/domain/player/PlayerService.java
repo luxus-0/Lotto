@@ -6,17 +6,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import pl.lotto.domain.player.dto.PlayerRequest;
 import pl.lotto.domain.player.dto.PlayerResponse;
-import pl.lotto.domain.player.exceptions.PlayerAlreadyExistsException;
 import pl.lotto.domain.player.exceptions.PlayerNotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
-import static pl.lotto.domain.player.PlayerRegisterStatus.REGISTER_SUCCESS;
 import static pl.lotto.domain.player.PlayerStatus.ACTIVE;
 import static pl.lotto.domain.player.PlayerStatus.INACTIVE;
 
@@ -28,18 +25,6 @@ class PlayerService {
     private final static String PLAYER_NOT_FOUND = "Player not found";
     private final PlayerRepository playerRepository;
     private final ObjectMapper objectMapper;
-
-    public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
-        boolean existPlayerById = playerRepository.existsPlayerById(playerRequest.id());
-        boolean existPlayerByEmail = playerRepository.existsPlayerByEmail(playerRequest.email());
-        if (!existPlayerById && !existPlayerByEmail) {
-            Player player = getPlayerStatusActive(playerRequest);
-            Player playerSaved = playerRepository.save(player);
-
-            return getPlayer(playerSaved);
-        }
-        return getPlayerStatusInactive(playerRequest);
-    }
 
     private static PlayerResponse getPlayerStatusInactive(PlayerRequest playerRequest) {
         return PlayerResponse.builder()
@@ -65,6 +50,18 @@ class PlayerService {
                 .status(ACTIVE)
                 .createdAt(now())
                 .build();
+    }
+
+    public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
+        boolean existPlayerById = playerRepository.existsPlayerById(playerRequest.id());
+        boolean existPlayerByEmail = playerRepository.existsPlayerByEmail(playerRequest.email());
+        if (!existPlayerById && !existPlayerByEmail) {
+            Player player = getPlayerStatusActive(playerRequest);
+            Player playerSaved = playerRepository.save(player);
+
+            return getPlayer(playerSaved);
+        }
+        return getPlayerStatusInactive(playerRequest);
     }
 
     public PlayerResponse findPlayer(UUID playerId) {

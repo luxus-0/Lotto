@@ -20,21 +20,6 @@ class WinningFacade {
     private final WinningService winningService;
     private final WinningValidator validator;
 
-    WinningResponse getWinnerResult(WinningRequest winningRequest) {
-        if (validator.valid(winningRequest)) {
-            Set<Integer> playerNumbers = winningRequest.playerNumbers();
-            UUID playerId = winningRequest.playerId();
-            Set<Integer> winnerNumbers = winningService.getWinnerNumbers(playerNumbers);
-            Integer hits = winningService.countHits(playerNumbers, winnerNumbers);
-            BigDecimal priceForHits = winningService.calculatePrice(hits);
-            LocalDateTime drawDate = drawDateTimeFacade.generate();
-            Winning winning = new Winning(UUID.randomUUID(), playerId, hits, priceForHits, drawDate);
-            Winning savedWinning = winningRepository.save(winning);
-            return getWinner(savedWinning);
-        }
-        return getLose();
-    }
-
     private static WinningResponse getLose() {
         return WinningResponse.builder()
                 .price(BigDecimal.ZERO)
@@ -50,5 +35,20 @@ class WinningFacade {
                 savedWinning.getPrice(),
                 savedWinning.getDrawDate(),
                 true);
+    }
+
+    WinningResponse getWinnerResult(WinningRequest winningRequest) {
+        if (validator.valid(winningRequest)) {
+            Set<Integer> playerNumbers = winningRequest.playerNumbers();
+            UUID playerId = winningRequest.playerId();
+            Set<Integer> winnerNumbers = winningService.getWinnerNumbers(playerNumbers);
+            Integer hits = winningService.countHits(playerNumbers, winnerNumbers);
+            BigDecimal priceForHits = winningService.calculatePrice(hits);
+            LocalDateTime drawDate = drawDateTimeFacade.generate();
+            Winning winning = new Winning(UUID.randomUUID(), playerId, hits, priceForHits, drawDate);
+            Winning savedWinning = winningRepository.save(winning);
+            return getWinner(savedWinning);
+        }
+        return getLose();
     }
 }

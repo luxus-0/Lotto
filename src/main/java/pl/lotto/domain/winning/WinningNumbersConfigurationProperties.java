@@ -10,6 +10,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder
 @Getter
 public class WinningNumbersConfigurationProperties {
-    @NotNull(message = "null min hits") @Min(0) private int minHits;
-    @NotNull(message = "null price") private double pricePerHit;
+    @NotNull(message = "null min hits")
+    @Min(0)
+    private int minHits;
+    @NotNull(message = "null price")
+    private double pricePerHit;
 }

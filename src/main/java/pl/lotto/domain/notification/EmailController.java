@@ -16,7 +16,7 @@ public class EmailController {
     private final EmailNotificationSenderImpl emailSender;
 
     @PostMapping("/send")
-    public ResponseEntity<Object> send(){
+    public ResponseEntity<Object> send() {
         emailSender.send();
         return ResponseEntity.status(CREATED).build();
     }

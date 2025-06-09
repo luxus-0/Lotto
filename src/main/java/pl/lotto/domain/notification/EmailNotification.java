@@ -11,7 +11,8 @@ import java.util.UUID;
 @Builder
 public class EmailNotification {
     @Id
-    private UUID id;;
+    private UUID id;
+    ;
     private String recipient;
     private String subject;
     private String message;

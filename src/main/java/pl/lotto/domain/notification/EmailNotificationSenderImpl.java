@@ -22,6 +22,12 @@ public class EmailNotificationSenderImpl implements EmailNotificationSender {
     private final EmailConfigurationProperties properties;
     private final SendGrid sendGrid;
 
+    private static void getHttpRequest(Request request, Mail mail) throws IOException {
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+    }
+
     @Override
     public void send() {
         Email from = new Email(properties.from());
@@ -44,7 +50,7 @@ public class EmailNotificationSenderImpl implements EmailNotificationSender {
 
     private void getHttpResponse(Request request) throws Exception {
         Response response = sendGrid.api(request);
-        if(response == null){
+        if (response == null) {
             throw new Exception("Failed to send email");
         }
 
@@ -54,12 +60,6 @@ public class EmailNotificationSenderImpl implements EmailNotificationSender {
             log.error("Failed to send email");
             throw new RuntimeException("HTTP STATUS CODE: " + statusCode);
         }
-    }
-
-    private static void getHttpRequest(Request request, Mail mail) throws IOException {
-        request.setMethod(Method.POST);
-        request.setEndpoint("mail/send");
-        request.setBody(mail.build());
     }
 
     @Override

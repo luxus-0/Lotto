@@ -19,7 +19,7 @@ public class LoginAndRegisterFacade {
                 .orElseThrow(() -> new BadCredentialsException("Username not found"));
     }
 
-    public RegistrationResultDto register(RegisterUserDto registerUserDto){
+    public RegistrationResultDto register(RegisterUserDto registerUserDto) {
         final User user = User.builder()
                 .username(registerUserDto.username())
                 .password(registerUserDto.password())

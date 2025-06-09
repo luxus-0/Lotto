@@ -25,6 +25,6 @@ public class LoginUserDetailService implements UserDetailsService {
                 userDto.username(),
                 userDto.password(),
                 Collections.emptyList()
-                );
+        );
     }
 }

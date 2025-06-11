@@ -1,4 +1,4 @@
-package pl.lotto.application.notification;
+package pl.lotto.application.smsnotification;
 
 public interface SmsNotificationSender {
     void send();

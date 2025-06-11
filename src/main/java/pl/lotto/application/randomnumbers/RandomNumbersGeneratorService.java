@@ -21,7 +21,7 @@ public class RandomNumbersGeneratorService {
     private final RandomNumbersValidator validator;
 
     @Scheduled(cron = "${random.numbers.cron}")
-    public void generate() {
+    void generate() {
         Set<Integer> randomNumbers = generateUniqueNumbers();
         if (validator.validate(randomNumbers)) {
             Set<Integer> savedRandomNumbers = randomNumbersRepository.save(randomNumbers);

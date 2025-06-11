@@ -1,4 +1,4 @@
-package pl.lotto.application.notification.exceptions;
+package pl.lotto.infrastructure.email.exceptions;
 
 public class BodyEmailNotFoundException extends RuntimeException {
     public BodyEmailNotFoundException(String message) {

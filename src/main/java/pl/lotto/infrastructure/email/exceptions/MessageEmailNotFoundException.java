@@ -1,4 +1,4 @@
-package pl.lotto.application.notification.exceptions;
+package pl.lotto.infrastructure.email.exceptions;
 
 public class MessageEmailNotFoundException extends RuntimeException {
     public MessageEmailNotFoundException(String message) {

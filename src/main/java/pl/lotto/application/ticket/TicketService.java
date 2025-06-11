@@ -33,7 +33,7 @@ public class TicketService {
                 .build();
     }
 
-    public TicketResponse createTicket(TicketRequest ticketRequest) {
+    TicketResponse createTicket(TicketRequest ticketRequest) {
         Set<Integer> numbers = ticketRequest.numbers();
         if (validator.isNumbersInRange(numbers)) {
             Ticket ticket = getTicket(ticketRequest);
@@ -51,19 +51,19 @@ public class TicketService {
         throw new TicketNotFoundException(TICKET_NOT_FOUND);
     }
 
-    public TicketResponse getTicketById(UUID id) {
+    TicketResponse getTicketById(UUID id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(TICKET_NOT_FOUND));
         return objectMapper.convertValue(ticket, TicketResponse.class);
     }
 
-    public Set<TicketResponse> getTicketsByPlayer(UUID playerId) {
+    Set<TicketResponse> getTicketsByPlayer(UUID playerId) {
         return ticketRepository.findAllByPlayerId(playerId).stream()
                 .map(ticket -> objectMapper.convertValue(ticket, TicketResponse.class))
                 .collect(Collectors.toSet());
     }
 
-    public Set<Ticket> findTicketsForDraw(LocalDateTime drawTime) {
+    Set<Ticket> findTicketsForDraw(LocalDateTime drawTime) {
         return ticketRepository.findAllByDrawDateTimeBeforeAndStatus(drawTime, TicketStatus.NEW);
     }
 }

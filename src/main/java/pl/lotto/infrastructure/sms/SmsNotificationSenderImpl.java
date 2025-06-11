@@ -1,4 +1,4 @@
-package pl.lotto.application.smsnotification;
+package pl.lotto.infrastructure.sms;
 
 import org.springframework.stereotype.Service;
 

@@ -32,8 +32,8 @@ public class RandomNumbersGeneratorService {
     }
 
     public Set<Integer> generateUniqueNumbers() {
-        int min = Integer.parseInt(String.valueOf(properties.getMin()));
-        int max = Integer.parseInt(String.valueOf(properties.getMax()));
+        int min = properties.getMin();
+        int max = properties.getMax();
         int count = properties.getCount();
 
         if (count > (max - min + 1)) {

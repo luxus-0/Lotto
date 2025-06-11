@@ -1,7 +1,6 @@
 package pl.lotto.application.winning;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,9 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder
 @Getter
 public class WinningNumbersConfigurationProperties {
-    @NotNull(message = "null min hits")
     @Min(0)
     private int minHits;
-    @NotNull(message = "null price")
+    @Min(0)
     private double pricePerHit;
 }

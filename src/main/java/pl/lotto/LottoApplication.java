@@ -3,11 +3,11 @@ package pl.lotto;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import pl.lotto.domain.drawdatetime.DrawDateTimeConfigurationProperties;
-import pl.lotto.domain.notification.EmailConfigurationProperties;
-import pl.lotto.domain.randomnumbers.RandomNumbersValidatorConfigurationProperties;
-import pl.lotto.domain.ticket.TicketNumbersValidatorConfigurationProperties;
-import pl.lotto.domain.winning.WinningNumbersConfigurationProperties;
+import pl.lotto.application.drawdatetime.DrawDateTimeConfigurationProperties;
+import pl.lotto.application.notification.EmailConfigurationProperties;
+import pl.lotto.application.randomnumbers.RandomNumbersValidatorConfigurationProperties;
+import pl.lotto.application.ticket.TicketNumbersValidatorConfigurationProperties;
+import pl.lotto.application.winning.WinningNumbersConfigurationProperties;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersGeneratorClientConfigurationProperties;
 import pl.lotto.infrastructure.token.TokenConfigurationProperties;
 

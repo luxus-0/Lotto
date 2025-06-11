@@ -13,7 +13,7 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
-import pl.lotto.domain.randomnumbers.RandomNumbersGeneratorFacade;
+import pl.lotto.application.randomnumbers.RandomNumbersGeneratorFacade;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersGeneratorClient;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersGeneratorClientConfigurationProperties;
 import pl.lotto.infrastructure.randomnumbers.http.RandomNumbersRequestPayloadFactory;

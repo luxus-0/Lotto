@@ -52,7 +52,7 @@ class PlayerService {
                 .build();
     }
 
-    public PlayerResponse registerPlayer(PlayerRequest playerRequest) {
+    PlayerResponse registerPlayer(PlayerRequest playerRequest) {
         boolean existPlayerById = playerRepository.existsPlayerById(playerRequest.id());
         boolean existPlayerByEmail = playerRepository.existsPlayerByEmail(playerRequest.email());
         if (!existPlayerById && !existPlayerByEmail) {
@@ -64,7 +64,7 @@ class PlayerService {
         return getPlayerStatusInactive(playerRequest);
     }
 
-    public PlayerResponse findPlayer(UUID playerId) {
+    PlayerResponse findPlayer(UUID playerId) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
 
@@ -72,7 +72,7 @@ class PlayerService {
     }
 
 
-    public Set<PlayerResponse> findPlayers() {
+    Set<PlayerResponse> findPlayers() {
         List<Player> players = playerRepository.findAll();
         players.stream().findAny().orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND));
         return players.stream()
@@ -80,7 +80,7 @@ class PlayerService {
                 .collect(Collectors.toSet());
     }
 
-    public PlayerResponse updatePlayer(UUID playerId) {
+    PlayerResponse updatePlayer(UUID playerId) {
         Player player = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));
 
@@ -98,7 +98,7 @@ class PlayerService {
         return objectMapper.convertValue(savedPlayer, PlayerResponse.class);
     }
 
-    public void removePlayer(UUID playerId) {
+    void removePlayer(UUID playerId) {
         Player playerToDelete = playerRepository.findById(playerId)
                 .orElseThrow(() -> new PlayerNotFoundException(PLAYER_NOT_FOUND + " with id: " + playerId));
         playerRepository.delete(playerToDelete);

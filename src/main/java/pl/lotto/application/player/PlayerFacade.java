@@ -13,7 +13,7 @@ import java.util.UUID;
 public class PlayerFacade {
     private final PlayerService playerService;
 
-    public PlayerResponse register(PlayerRequest player) {
+    PlayerResponse register(PlayerRequest player) {
         return playerService.registerPlayer(player);
     }
 
@@ -21,15 +21,15 @@ public class PlayerFacade {
         return playerService.updatePlayer(playerId);
     }
 
-    public PlayerResponse find(UUID playerId) {
+    PlayerResponse find(UUID playerId) {
         return playerService.findPlayer(playerId);
     }
 
-    public Set<PlayerResponse> findAll() {
+    Set<PlayerResponse> findAll() {
         return playerService.findPlayers();
     }
 
-    public void delete(UUID playerId) {
+    void delete(UUID playerId) {
         playerService.removePlayer(playerId);
     }
 }

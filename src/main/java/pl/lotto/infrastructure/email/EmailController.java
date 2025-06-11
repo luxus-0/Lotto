@@ -1,4 +1,4 @@
-package pl.lotto.application.notification;
+package pl.lotto.infrastructure.email;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/api/emails")
 public class EmailController {
 
-    private final EmailNotificationSenderImpl emailSender;
+    private final EmailSenderImpl emailSender;
 
     @PostMapping("/send")
     public ResponseEntity<Object> send() {

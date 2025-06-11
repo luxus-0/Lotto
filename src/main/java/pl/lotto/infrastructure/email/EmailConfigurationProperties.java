@@ -1,18 +1,18 @@
-package pl.lotto.application.notification;
+package pl.lotto.infrastructure.email;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-import pl.lotto.application.notification.exceptions.EmailApiKeyNotFoundException;
-import pl.lotto.application.notification.exceptions.FromEmailNotFoundException;
-import pl.lotto.application.notification.exceptions.MessageEmailNotFoundException;
-import pl.lotto.application.notification.exceptions.SubjectEmailNotFoundException;
+import pl.lotto.infrastructure.email.exceptions.EmailApiKeyNotFoundException;
+import pl.lotto.infrastructure.email.exceptions.FromEmailNotFoundException;
+import pl.lotto.infrastructure.email.exceptions.MessageEmailNotFoundException;
+import pl.lotto.infrastructure.email.exceptions.SubjectEmailNotFoundException;
 
 @ConfigurationProperties(prefix = "email")
 @Validated
 public record EmailConfigurationProperties(String from,
                                            String to,
                                            String apiKey,
-                                           String message,
+                                           String body,
                                            String subject) {
     public EmailConfigurationProperties {
         if (from == null || from.isBlank()) {
@@ -21,7 +21,7 @@ public record EmailConfigurationProperties(String from,
         if (to == null || to.isBlank()) {
             throw new FromEmailNotFoundException("To email is required");
         }
-        if (message == null || message.isBlank()) {
+        if (body == null || body.isBlank()) {
             throw new MessageEmailNotFoundException("Body email is required");
         }
         if (subject == null || subject.isBlank()) {

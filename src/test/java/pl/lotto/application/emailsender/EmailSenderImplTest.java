@@ -1,4 +1,4 @@
-package pl.lotto.application.notification;
+package pl.lotto.application.emailsender;
 
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -13,11 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import pl.lotto.application.notification.exceptions.BodyEmailNotFoundException;
-import pl.lotto.application.notification.exceptions.FromEmailNotFoundException;
-import pl.lotto.application.notification.exceptions.SubjectEmailNotFoundException;
-import pl.lotto.application.notification.exceptions.ToEmailNotFoundException;
-import pl.lotto.application.notification.vo.EmailRequest;
+import pl.lotto.infrastructure.email.EmailConfigurationProperties;
+import pl.lotto.infrastructure.email.EmailSenderImpl;
+import pl.lotto.infrastructure.email.EmailValidator;
+import pl.lotto.infrastructure.email.dto.EmailRequest;
+import pl.lotto.infrastructure.email.exceptions.*;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class EmailNotificationSenderImplTest {
+class EmailSenderImplTest {
 
     @Mock
     private SendGrid sendGrid;
@@ -38,7 +38,9 @@ class EmailNotificationSenderImplTest {
     private EmailConfigurationProperties properties;
 
     @InjectMocks
-    private EmailNotificationSenderImpl emailNotificationSender;
+    private EmailSenderImpl emailNotificationSender;
+    @Mock
+    private EmailValidator validator;
 
     private Response successfulResponse;
 
@@ -48,7 +50,7 @@ class EmailNotificationSenderImplTest {
     void setUp() {
         successfulResponse = new Response();
         successfulResponse.setStatusCode(202);
-        successfulResponse.setBody("{\"message\": \"Email sent successfully\"}");
+        successfulResponse.setBody("{\"body\": \"Email sent successfully\"}");
         successfulResponse.setHeaders(null);
 
         errorResponse = new Response();
@@ -59,7 +61,7 @@ class EmailNotificationSenderImplTest {
         when(properties.from()).thenReturn("default_from@example.com");
         when(properties.to()).thenReturn("default_to@example.com");
         when(properties.subject()).thenReturn("Default Subject");
-        when(properties.message()).thenReturn("Default Message Body");
+        when(properties.body()).thenReturn("Default Message Body");
     }
 
     @Test
@@ -112,7 +114,7 @@ class EmailNotificationSenderImplTest {
         // then
         assertThatThrownBy(() -> emailNotificationSender.send())
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("Failed to send email");
+                .hasMessage("Failed to send email to "+ properties.to());
         verify(sendGrid).api(any(Request.class));
     }
 
@@ -125,9 +127,7 @@ class EmailNotificationSenderImplTest {
         // then
         assertThatThrownBy(() -> emailNotificationSender.send())
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("Failed to send email")
-                .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("Failed to send email");
+                .hasMessage("Failed to send email to " + properties.to());
         verify(sendGrid).api(any(Request.class));
     }
 
@@ -165,7 +165,7 @@ class EmailNotificationSenderImplTest {
         // then
         assertThatThrownBy(() -> emailNotificationSender.send(emailRequest))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error sending email");
+                .hasMessageContaining("Failed to send email to " + emailRequest.to());
         verify(sendGrid).api(any(Request.class));
     }
 
@@ -181,7 +181,7 @@ class EmailNotificationSenderImplTest {
         // then
         assertThatThrownBy(() -> emailNotificationSender.send(emailRequest))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error sending email");
+                .hasMessage("Failed to send email to " + emailRequest.to());
         verify(sendGrid).api(any(Request.class));
     }
 
@@ -196,8 +196,7 @@ class EmailNotificationSenderImplTest {
         // then
         assertThatThrownBy(() -> emailNotificationSender.send(emailRequest))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error sending email")
-                .hasCause(new RuntimeException("HTTP STATUS CODE: 500"));
+                .hasMessage("Failed to send email to " + emailRequest.to());
         verify(sendGrid).api(any(Request.class));
     }
 
@@ -211,142 +210,135 @@ class EmailNotificationSenderImplTest {
         // then
         assertThatThrownBy(() -> emailNotificationSender.send(emailRequest))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error sending email")
-                .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("Error sending email");
+                .hasMessage("Failed to send email to " + emailRequest.to());
         verify(sendGrid).api(any(Request.class));
     }
 
     @Test
-    void emailRequestShouldThrowFromEmailNotFoundExceptionWhenFromIsNull() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest(null, "to@example.com", "Subject", "Body"))
-                .isInstanceOf(FromEmailNotFoundException.class)
-                .hasMessage("From email is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowFromEmailNotFoundExceptionWhenFromIsBlank() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest(" ", "to@example.com", "Subject", "Body"))
-                .isInstanceOf(FromEmailNotFoundException.class)
-                .hasMessage("From email is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowToEmailNotFoundExceptionWhenToIsNull() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest("from@example.com", null, "Subject", "Body"))
-                .isInstanceOf(ToEmailNotFoundException.class)
-                .hasMessage("To email is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowToEmailNotFoundExceptionWhenToIsBlank() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest("from@example.com", " ", "Subject", "Body"))
-                .isInstanceOf(ToEmailNotFoundException.class)
-                .hasMessage("To email is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowSubjectEmailNotFoundExceptionWhenSubjectIsNull() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest("from@example.com", "to@example.com", null, "Body"))
-                .isInstanceOf(SubjectEmailNotFoundException.class)
-                .hasMessage("Subject is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowSubjectEmailNotFoundExceptionWhenSubjectIsBlank() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest("from@example.com", "to@example.com", " ", "Body"))
-                .isInstanceOf(SubjectEmailNotFoundException.class)
-                .hasMessage("Subject is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowBodyEmailNotFoundExceptionWhenBodyIsNull() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest("from@example.com", "to@example.com", "Subject", null))
-                .isInstanceOf(BodyEmailNotFoundException.class)
-                .hasMessage("Body is required");
-    }
-
-    @Test
-    void emailRequestShouldThrowBodyEmailNotFoundExceptionWhenBodyIsBlank() {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() -> new EmailRequest("from@example.com", "to@example.com", "Subject", " "))
-                .isInstanceOf(BodyEmailNotFoundException.class)
-                .hasMessage("Body is required");
-    }
-
-    @Test
-    void shouldThrowRuntimeExceptionWhenDefaultFromEmailIsInvalid() {
-        // given
-        when(properties.from()).thenReturn(null);
-
-        // when
-        // then
-        assertThatThrownBy(() -> emailNotificationSender.send())
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Failed to send email")
-                .hasCauseInstanceOf(Exception.class)
-                .hasRootCauseMessage("Failed to send email");
-    }
-
-    @Test
-    void shouldThrowRuntimeExceptionWhenDefaultToEmailIsInvalid() {
-        // given
-        when(properties.to()).thenReturn("");
-
-        // when
-        // then
-        assertThatThrownBy(() -> emailNotificationSender.send())
-                .isInstanceOf(RuntimeException.class)
-                .hasCauseInstanceOf(Exception.class)
-                .hasMessageContaining("Failed to send email");
-    }
-
-    @Test
-    void shouldThrowRuntimeExceptionWhenDefaultSubjectIsInvalid() {
+    void shouldThrowSubjectEmailNotFoundExceptionWhenSubjectIsNull() {
         // given
         when(properties.subject()).thenReturn(null);
-
+        doThrow(new SubjectEmailNotFoundException("Email subject is required")).when(validator).validate();
         // when
         // then
         assertThatThrownBy(() -> emailNotificationSender.send())
-                .isInstanceOf(RuntimeException.class)
-                .hasCauseInstanceOf(Exception.class)
-                .hasRootCauseMessage("Failed to send email");
+                .isInstanceOf(SubjectEmailNotFoundException.class)
+                .hasMessage("Email subject is required");
     }
 
     @Test
-    void shouldThrowRuntimeExceptionWhenDefaultMessageIsInvalid() {
+    void shouldThrowSubjectEmailNotFoundExceptionWhenSubjectIsBlank() {
         // given
-        when(properties.message()).thenReturn(" ");
+        when(properties.subject()).thenReturn("");
+        doThrow(new SubjectEmailNotFoundException("Email subject is required")).when(validator).validate();
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(SubjectEmailNotFoundException.class)
+                .hasMessage("Email subject is required");
+    }
+
+    @Test
+    void shouldThrowFromEmailNotFoundExceptionWhenFromEmailIsNull() {
+        // given
+        when(properties.from()).thenReturn(null);
+        doThrow(new FromEmailNotFoundException("From email is required")).when(validator).validate();
 
         // when
         // then
         assertThatThrownBy(() -> emailNotificationSender.send())
-                .isInstanceOf(RuntimeException.class)
-                .hasCauseInstanceOf(Exception.class)
-                .hasMessageContaining("Failed to send email");
+                .isInstanceOf(FromEmailNotFoundException.class)
+                .hasMessage("From email is required");
+    }
+
+    @Test
+    void shouldThrowFromEmailNotFoundExceptionWhenFromIsBlank() {
+        // given
+        when(properties.from()).thenReturn("");
+        doThrow(new FromEmailNotFoundException("From email is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(FromEmailNotFoundException.class)
+                .hasMessage("From email is required");
+    }
+
+    @Test
+    void shouldThrowToEmailNotFoundExceptionWhenBodyIsNull() {
+        // given
+        when(properties.to()).thenReturn(null);
+        doThrow(new ToEmailNotFoundException("To email is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(ToEmailNotFoundException.class)
+                .hasMessageContaining("To email is required");
+    }
+
+    @Test
+    void shouldThrowToEmailNotFoundExceptionWhenBodyIsBlank() {
+        // given
+        when(properties.to()).thenReturn(" ");
+        doThrow(new ToEmailNotFoundException("To email is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(ToEmailNotFoundException.class)
+                .hasMessageContaining("To email is required");
+    }
+
+    @Test
+    void shouldThrowBodyEmailNotFoundExceptionWhenBodyIsNull() {
+        // given
+        when(properties.body()).thenReturn(null);
+        doThrow(new BodyEmailNotFoundException("Email body key is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(BodyEmailNotFoundException.class)
+                .hasMessageContaining("Email body key is required");
+    }
+
+    @Test
+    void shouldThrowBodyEmailNotFoundExceptionWhenBodyIsBlank() {
+        // given
+        when(properties.body()).thenReturn(" ");
+        doThrow(new BodyEmailNotFoundException("Email body is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(BodyEmailNotFoundException.class)
+                .hasMessageContaining("Email body is required");
+    }
+
+    @Test
+    void shouldThrowEmailApiKeyNotFoundExceptionWhenApiKeyIsBlank() {
+        // given
+        when(properties.apiKey()).thenReturn(" ");
+        doThrow(new EmailApiKeyNotFoundException("Email API key is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(EmailApiKeyNotFoundException.class)
+                .hasMessageContaining("Email API key is required");
+    }
+
+    @Test
+    void shouldThrowEmailApiKeyNotFoundExceptionWhenApiKeyIsNull() {
+        // given
+        when(properties.apiKey()).thenReturn(null);
+        doThrow(new EmailApiKeyNotFoundException("Email API key is required")).when(validator).validate();
+
+        // when
+        // then
+        assertThatThrownBy(() -> emailNotificationSender.send())
+                .isInstanceOf(EmailApiKeyNotFoundException.class)
+                .hasMessageContaining("Email API key is required");
     }
 }

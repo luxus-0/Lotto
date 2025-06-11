@@ -3,7 +3,7 @@ package pl.lotto.infrastructure.configuration;
 import com.sendgrid.SendGrid;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.lotto.application.notification.EmailConfigurationProperties;
+import pl.lotto.infrastructure.email.EmailConfigurationProperties;
 
 @Configuration
 public class SendgridConfiguration {
